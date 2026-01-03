@@ -82,3 +82,8 @@ variable "sns_email_endpoint" {
   type        = string
   default     = "student@example.com" # TODO: student supplies
 }
+
+variable "my_ip_cidr" {
+  description = "Your device's IP in CIDR"
+  type        = string
+}

@@ -2,9 +2,9 @@
 # Locals (naming convention: Chewbacca-*)
 ############################################
 locals {
-  name_prefix = var.project_name
+  name_prefix       = var.project_name
   inbound_ports_ec2 = [80, 22]
-  db_port = 3306
+  db_port           = 3306
 }
 
 ############################################
@@ -145,30 +145,41 @@ resource "aws_security_group" "chewbacca_ec2_sg01" {
   description = "EC2 app security group"
   vpc_id      = aws_vpc.chewbacca_vpc01.id
 
-  # TODO: student adds inbound rules (HTTP 80, SSH 22 from their IP)
-  dynamic "ingress" {
-    for_each = local.inbound_ports_ec2 
-      content {
-        from_port = ingress.value
-        to_port = ingress.value
-        cidr_blocks = var.public_subnet_cidrs
-        protocol = "TCP"
-      }
-    }
-
-  # TODO: student ensures outbound allows DB port to RDS SG (or allow all outbound)
-  egress {
-    from_port = local.db_port
-    to_port = local.db_port
-    protocol = "TCP"
-    cidr_blocks = var.public_subnet_cidrs
-    security_groups = [aws_security_group.chewbacca_rds_sg01.id]
-  }
-
   tags = {
     Name = "${local.name_prefix}-ec2-sg01"
   }
 }
+
+# TODO: student adds inbound rules (HTTP 80, SSH 22 from their IP)
+# TODO: student ensures outbound allows DB port to RDS SG (or allow all outbound)
+resource "aws_security_group_rule" "chewbacca_ec2_sg_ingress_http" {
+  from_port         = 80
+  protocol          = "tcp"
+  security_group_id = aws_security_group.chewbacca_ec2_sg01.id
+  to_port           = 80
+  type              = "ingress"
+  cidr_blocks       = [var.my_ip_cidr]
+}
+
+resource "aws_security_group_rule" "chewbacca_ec2_sg_ingress_ssh" {
+  from_port         = 22
+  protocol          = "tcp"
+  security_group_id = aws_security_group.chewbacca_ec2_sg01.id
+  to_port           = 22
+  type              = "ingress"
+  cidr_blocks       = [var.my_ip_cidr]
+}
+# TODO: student ensures outbound allows DB port to RDS SG (or allow all outbound)
+
+resource "aws_security_group_rule" "chewbacca_ec2_sg_egress_db" {
+  from_port                = local.db_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.chewbacca_ec2_sg01.id
+  to_port                  = local.db_port
+  type                     = "egress"
+  source_security_group_id = aws_security_group.chewbacca_rds_sg01.id //allow traffic from anything that has this SG attached
+}
+
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
 resource "aws_security_group" "chewbacca_rds_sg01" {
@@ -176,20 +187,21 @@ resource "aws_security_group" "chewbacca_rds_sg01" {
   description = "RDS security group"
   vpc_id      = aws_vpc.chewbacca_vpc01.id
 
-  # TODO: student adds inbound MySQL 3306 from aws_security_group.chewbacca_ec2_sg01.id
-
- ingress {
-    from_port = local.db_port
-    to_port = local.db_port
-    cidr_blocks = var.public_subnet_cidrs
-    protocol = "TCP"
-    security_groups = [aws_security_group.chewbacca_ec2_sg01.id]
-  }
-
   tags = {
     Name = "${local.name_prefix}-rds-sg01"
   }
 }
+
+# TODO: student adds inbound MySQL 3306 from aws_security_group.chewbacca_ec2_sg01.id
+resource "aws_security_group_rule" "chewbacca_rds_sg_ingress_mysql" {
+  from_port                = local.db_port
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.chewbacca_rds_sg01.id //recieving the traffic
+  to_port                  = local.db_port
+  type                     = "ingress"
+  source_security_group_id = aws_security_group.chewbacca_ec2_sg01.id
+}
+
 
 ############################################
 # RDS Subnet Group
@@ -211,19 +223,19 @@ resource "aws_db_subnet_group" "chewbacca_rds_subnet_group01" {
 
 # Explanation: This is the holocron of state—your relational data lives here, not on the EC2.
 resource "aws_db_instance" "chewbacca_rds01" {
-  identifier             = "${local.name_prefix}-rds01"
-  engine                 = var.db_engine
-  instance_class         = var.db_instance_class
-  allocated_storage      = 20
-  db_name                = var.db_name
-  username               = var.db_username
-  password               = var.db_password
+  identifier        = "${local.name_prefix}-rds01"
+  engine            = var.db_engine
+  instance_class    = var.db_instance_class
+  allocated_storage = 20
+  db_name           = var.db_name
+  username          = var.db_username
+  password          = var.db_password
 
   db_subnet_group_name   = aws_db_subnet_group.chewbacca_rds_subnet_group01.name
   vpc_security_group_ids = [aws_security_group.chewbacca_rds_sg01.id]
 
-  publicly_accessible    = false
-  skip_final_snapshot    = true
+  publicly_accessible = false
+  skip_final_snapshot = true
 
   # TODO: student sets multi_az / backups / monitoring as stretch goals
 
@@ -243,9 +255,9 @@ resource "aws_iam_role" "chewbacca_ec2_role01" {
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Effect = "Allow"
+      Effect    = "Allow"
       Principal = { Service = "ec2.amazonaws.com" }
-      Action = "sts:AssumeRole"
+      Action    = "sts:AssumeRole"
     }]
   })
 }
@@ -253,18 +265,18 @@ resource "aws_iam_role" "chewbacca_ec2_role01" {
 # Explanation: These policies are your Wookiee toolbelt—tighten them (least privilege) as a stretch goal.
 resource "aws_iam_role_policy_attachment" "chewbacca_ec2_ssm_attach" {
   role       = aws_iam_role.chewbacca_ec2_role01.name
-  policy_arn  = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
 # Explanation: EC2 must read secrets/params during recovery—give it access (students should scope it down).
 resource "aws_iam_role_policy_attachment" "chewbacca_ec2_secrets_attach" {
-  role      = aws_iam_role.chewbacca_ec2_role01.name
+  role       = aws_iam_role.chewbacca_ec2_role01.name
   policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite" # TODO: student replaces w/ least privilege
 }
 
 # Explanation: CloudWatch logs are the “ship’s black box”—you need them when things explode.
 resource "aws_iam_role_policy_attachment" "chewbacca_ec2_cw_attach" {
-  role      = aws_iam_role.chewbacca_ec2_role01.name
+  role       = aws_iam_role.chewbacca_ec2_role01.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
@@ -279,20 +291,20 @@ resource "aws_iam_instance_profile" "chewbacca_instance_profile01" {
 ############################################
 
 # Explanation: This is your “Han Solo box”—it talks to RDS and complains loudly when the DB is down.
-resource "aws_instance" "chewbacca_ec201" {
-  ami                    = var.ec2_ami_id
-  instance_type           = var.ec2_instance_type
-  subnet_id               = aws_subnet.chewbacca_public_subnets[0].id
-  vpc_security_group_ids  = [aws_security_group.chewbacca_ec2_sg01.id]
-  iam_instance_profile    = aws_iam_instance_profile.chewbacca_instance_profile01.name
+# resource "aws_instance" "chewbacca_ec201" {
+#   ami                    = var.ec2_ami_id
+#   instance_type           = var.ec2_instance_type
+#   subnet_id               = aws_subnet.chewbacca_public_subnets[0].id
+#   vpc_security_group_ids  = [aws_security_group.chewbacca_ec2_sg01.id]
+#   iam_instance_profile    = aws_iam_instance_profile.chewbacca_instance_profile01.name
 
-  # TODO: student supplies user_data to install app + CW agent + configure log shipping
-  # user_data = file("${path.module}/user_data.sh")
+#   # TODO: student supplies user_data to install app + CW agent + configure log shipping
+#   # user_data = file("${path.module}/user_data.sh")
 
-  tags = {
-    Name = "${local.name_prefix}-ec201"
-  }
-}
+#   tags = {
+#     Name = "${local.name_prefix}-ec201"
+#   }
+# }
 
 ############################################
 # Parameter Store (SSM Parameters)
@@ -383,7 +395,7 @@ resource "aws_cloudwatch_metric_alarm" "chewbacca_db_alarm01" {
   statistic           = "Sum"
   threshold           = 3
 
-  alarm_actions       = [aws_sns_topic.chewbacca_sns_topic01.arn]
+  alarm_actions = [aws_sns_topic.chewbacca_sns_topic01.arn]
 
   tags = {
     Name = "${local.name_prefix}-alarm-db-fail"
