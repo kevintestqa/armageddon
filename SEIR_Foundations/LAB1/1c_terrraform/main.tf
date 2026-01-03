@@ -3,7 +3,8 @@
 ############################################
 locals {
   name_prefix       = var.project_name
-  inbound_ports_ec2 = [80, 22]
+  inbound_ports_ec2_http = 80
+  inbound_ports_ec2_ssh = 22
   db_port           = 3306
 }
 
@@ -150,36 +151,32 @@ resource "aws_security_group" "satellite_ec2_sg01" {
   }
 }
 
-# TODO: student adds inbound rules (HTTP 80, SSH 22 from their IP)
-# TODO: student ensures outbound allows DB port to RDS SG (or allow all outbound)
-resource "aws_security_group_rule" "satellite_ec2_sg_ingress_http" {
-  from_port         = 80
-  protocol          = "tcp"
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
-  to_port           = 80
-  type              = "ingress"
-  cidr_blocks       = [var.my_ip_cidr]
+# Adds inbound rules (HTTP 80, SSH 22 from their IP)
+
+resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
+  ip_protocol = "tcp"
+  security_group_id =  aws_security_group.satellite_ec2_sg01.id
+  from_port = local.inbound_ports_ec2_http
+  to_port = local.inbound_ports_ec2_http
+  cidr_ipv4 = var.my_ip_cidr
 }
 
-resource "aws_security_group_rule" "satellite_ec2_sg_ingress_ssh" {
-  from_port         = 22
-  protocol          = "tcp"
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
-  to_port           = 22
-  type              = "ingress"
-  cidr_blocks       = [var.my_ip_cidr]
-}
-# TODO: student ensures outbound allows DB port to RDS SG (or allow all outbound)
-
-resource "aws_security_group_rule" "satellite_ec2_sg_egress_db" {
-  from_port                = local.db_port
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.satellite_ec2_sg01.id
-  to_port                  = local.db_port
-  type                     = "egress"
-  source_security_group_id = aws_security_group.satellite_rds_sg01.id //allow traffic from anything that has this SG attached
+resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_ssh" {
+  ip_protocol = "tcp"
+  security_group_id =  aws_security_group.satellite_ec2_sg01.id
+  from_port = local.inbound_ports_ec2_ssh
+  to_port = local.inbound_ports_ec2_ssh
+  cidr_ipv4 = var.my_ip_cidr
 }
 
+# Ensures outbound allows DB port to RDS SG (or allow all outbound)
+resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
+  ip_protocol = "tcp"
+  security_group_id =  aws_security_group.satellite_ec2_sg01.id
+  from_port = local.db_port
+  to_port = local.db_port
+  referenced_security_group_id = aws_security_group.satellite_rds_sg01.id
+}
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
 resource "aws_security_group" "satellite_rds_sg01" {
@@ -193,13 +190,13 @@ resource "aws_security_group" "satellite_rds_sg01" {
 }
 
 # TODO: student adds inbound MySQL 3306 from aws_security_group.satellite_ec2_sg01.id
-resource "aws_security_group_rule" "satellite_rds_sg_ingress_mysql" {
-  from_port                = local.db_port
-  protocol                 = "tcp"
-  security_group_id        = aws_security_group.satellite_rds_sg01.id //recieving the traffic
-  to_port                  = local.db_port
-  type                     = "ingress"
-  source_security_group_id = aws_security_group.satellite_ec2_sg01.id
+
+resource "aws_vpc_security_group_ingress_rule" "satellite_rds_sg_ingress_mysql" {
+  ip_protocol = "tcp"
+  security_group_id =  aws_security_group.satellite_rds_sg01.id
+  from_port = local.db_port
+  to_port = local.db_port
+  referenced_security_group_id = aws_security_group.satellite_ec2_sg01.id
 }
 
 
@@ -348,22 +345,22 @@ resource "aws_ssm_parameter" "satellite_db_name_param" {
 ############################################
 
 # Explanation: Secrets Manager is satellite’s locked holster—credentials go here, not in code.
-resource "aws_secretsmanager_secret" "satellite_db_secret01" {
-  name = "${local.name_prefix}/rds/mysql"
-}
+# resource "aws_secretsmanager_secret" "satellite_db_secret01" {
+#   name = "${local.name_prefix}/rds/mysql"
+# }
 
-# Explanation: Secret payload—students should align this structure with their app (and support rotation later).
-resource "aws_secretsmanager_secret_version" "satellite_db_secret_version01" {
-  secret_id = aws_secretsmanager_secret.satellite_db_secret01.id
+# # Explanation: Secret payload—students should align this structure with their app (and support rotation later).
+# resource "aws_secretsmanager_secret_version" "satellite_db_secret_version01" {
+#   secret_id = aws_secretsmanager_secret.satellite_db_secret01.id
 
-  secret_string = jsonencode({
-    username = var.db_username
-    password = var.db_password
-    host     = aws_db_instance.satellite_rds01.address
-    port     = aws_db_instance.satellite_rds01.port
-    dbname   = var.db_name
-  })
-}
+#   secret_string = jsonencode({
+#     username = var.db_username
+#     password = var.db_password
+#     host     = aws_db_instance.satellite_rds01.address
+#     port     = aws_db_instance.satellite_rds01.port
+#     dbname   = var.db_name
+#   })
+# }
 
 ############################################
 # CloudWatch Logs (Log Group)
