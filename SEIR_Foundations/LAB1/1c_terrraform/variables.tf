@@ -1,13 +1,13 @@
 variable "aws_region" {
-  description = "AWS Region for the Chewbacca fleet to patrol."
+  description = "AWS Region for the satellite fleet to patrol."
   type        = string
   default     = "us-east-1"
 }
 
 variable "project_name" {
-  description = "Prefix for naming. Students should change from 'chewbacca' to their own."
+  description = "Prefix for naming. Students should change from 'satellite' to their own."
   type        = string
-  default     = "chewbacca"
+  default     = "satellite"
 }
 
 variable "vpc_cidr" {
