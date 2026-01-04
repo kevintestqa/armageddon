@@ -74,13 +74,13 @@ variable "db_password" {
   description = "DB master password (DO NOT hardcode in real life; for lab only)."
   type        = string
   sensitive   = true
-  default     = "REPLACE_ME" # TODO: student supplies
+  default     = "sophiekingdom5" # TODO: student supplies
 }
 
 variable "sns_email_endpoint" {
   description = "Email for SNS subscription (PagerDuty simulation)."
   type        = string
-  default     = "student@example.com" # TODO: student supplies
+  default     = "kevinwillocks@gmail.com" # TODO: student supplies
 }
 
 variable "my_ip_cidr" {

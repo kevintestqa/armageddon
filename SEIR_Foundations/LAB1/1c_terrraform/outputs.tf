@@ -11,9 +11,9 @@ output "satellite_private_subnet_ids" {
   value = aws_subnet.satellite_private_subnets[*].id
 }
 
-output "satellite_ec2_instance_id" {
-  value = aws_instance.satellite_ec201.id
-}
+# output "satellite_ec2_instance_id" {
+#   value = aws_instance.satellite_ec201.id
+# }
 
 output "satellite_rds_endpoint" {
   value = aws_db_instance.satellite_rds01.address
