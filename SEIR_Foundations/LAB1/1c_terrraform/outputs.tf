@@ -30,12 +30,12 @@ output "satellite_log_group_name" {
 output "securityGroupOutputEgress" {
   description = "Key details for the EC2 security group egress rule (DB)"
   value = {
-    id                       = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_db.id
-    ip_protocol              = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_db.ip_protocol
-    from_port                = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_db.from_port
-    to_port                  = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_db.to_port
-    security_group_id        = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_db.security_group_id
-    referenced_security_group_id = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_db.referenced_security_group_id
+    id                       = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_all.id
+    ip_protocol              = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_all.ip_protocol
+    from_port                = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_all.from_port
+    to_port                  = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_all.to_port
+    security_group_id        = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_all.security_group_id
+    referenced_security_group_id = aws_vpc_security_group_egress_rule.satellite_ec2_sg_egress_all.referenced_security_group_id
   }
 }
 

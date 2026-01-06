@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "Prefix for naming. Students should change from 'satellite' to their own."
   type        = string
-  default     = "satellite"
+  default     = "satellite-6"
 }
 
 variable "vpc_cidr" {
@@ -37,7 +37,7 @@ variable "azs" {
 variable "ec2_ami_id" {
   description = "AMI ID for the EC2 app host."
   type        = string
-  default     = "ami-REPLACE_ME" # TODO
+  default     = "ami-068c0051b15cdb816" # TODO
 }
 
 variable "ec2_instance_type" {

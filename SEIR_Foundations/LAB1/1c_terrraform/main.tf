@@ -2,10 +2,13 @@
 # Locals (naming convention: satellite-*)
 ############################################
 locals {
-  name_prefix       = var.project_name
-  inbound_ports_ec2_http = 80
-  inbound_ports_ec2_ssh = 22
-  db_port           = 3306
+  name_prefix    = var.project_name
+  ports_http = 80
+  ports_ssh  = 22
+  db_port        = 3306
+  tcp_protocol   = "tcp"
+  all_ip_address = "0.0.0.0/0"
+  all_ports = "-1"
 }
 
 ############################################
@@ -154,27 +157,26 @@ resource "aws_security_group" "satellite_ec2_sg01" {
 # Adds inbound rules (HTTP 80, SSH 22 from their IP)
 
 resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
-  ip_protocol = "tcp"
-  security_group_id =  aws_security_group.satellite_ec2_sg01.id
-  from_port = local.inbound_ports_ec2_http
-  to_port = local.inbound_ports_ec2_http
-  cidr_ipv4 = var.my_ip_cidr
+  ip_protocol       = local.tcp_protocol
+  security_group_id = aws_security_group.satellite_ec2_sg01.id
+  from_port         = local.ports_http
+  to_port           = local.ports_http
+  cidr_ipv4         = local.all_ip_address
 }
 
 resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_ssh" {
-  ip_protocol = "tcp"
-  security_group_id =  aws_security_group.satellite_ec2_sg01.id
-  from_port = local.inbound_ports_ec2_ssh
-  to_port = local.inbound_ports_ec2_ssh
-  cidr_ipv4 = var.my_ip_cidr
+  ip_protocol       = local.tcp_protocol
+  security_group_id = aws_security_group.satellite_ec2_sg01.id
+  from_port         = local.ports_ssh
+  to_port           = local.ports_ssh
+  cidr_ipv4         = var.my_ip_cidr
 }
 
 # Ensures outbound allows DB port to RDS SG (or allow all outbound)
-resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
-  ip_protocol = "tcp"
-  security_group_id =  aws_security_group.satellite_ec2_sg01.id
-  from_port = local.db_port
-  to_port = local.db_port
+#KW 1/5 - Added Egress all rule - may need to add one for https
+resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_all" {
+  ip_protocol                  = local.all_ports
+  security_group_id            = aws_security_group.satellite_ec2_sg01.id
   referenced_security_group_id = aws_security_group.satellite_rds_sg01.id
 }
 
@@ -192,10 +194,10 @@ resource "aws_security_group" "satellite_rds_sg01" {
 # TODO: student adds inbound MySQL 3306 from aws_security_group.satellite_ec2_sg01.id
 
 resource "aws_vpc_security_group_ingress_rule" "satellite_rds_sg_ingress_mysql" {
-  ip_protocol = "tcp"
-  security_group_id =  aws_security_group.satellite_rds_sg01.id
-  from_port = local.db_port
-  to_port = local.db_port
+  ip_protocol                  = local.tcp_protocol
+  security_group_id            = aws_security_group.satellite_rds_sg01.id
+  from_port                    = local.db_port
+  to_port                      = local.db_port
   referenced_security_group_id = aws_security_group.satellite_ec2_sg01.id
 }
 
@@ -288,20 +290,20 @@ resource "aws_iam_instance_profile" "satellite_instance_profile01" {
 ############################################
 
 # Explanation: This is your “Han Solo box”—it talks to RDS and complains loudly when the DB is down.
-# resource "aws_instance" "satellite_ec201" {
-#   ami                    = var.ec2_ami_id
-#   instance_type           = var.ec2_instance_type
-#   subnet_id               = aws_subnet.satellite_public_subnets[0].id
-#   vpc_security_group_ids  = [aws_security_group.satellite_ec2_sg01.id]
-#   iam_instance_profile    = aws_iam_instance_profile.satellite_instance_profile01.name
+resource "aws_instance" "satellite_ec201" {
+  ami                    = var.ec2_ami_id
+  instance_type          = var.ec2_instance_type
+  subnet_id              = aws_subnet.satellite_public_subnets[0].id
+  vpc_security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+  iam_instance_profile   = aws_iam_instance_profile.satellite_instance_profile01.name
 
-#   # TODO: student supplies user_data to install app + CW agent + configure log shipping
-#   # user_data = file("${path.module}/user_data.sh")
+  # TODO: student supplies user_data to install app + CW agent + configure log shipping
+  user_data = file("${path.module}/1a_user_data.sh")
 
-#   tags = {
-#     Name = "${local.name_prefix}-ec201"
-#   }
-# }
+  tags = {
+    Name = "${local.name_prefix}-ec201"
+  }
+}
 
 ############################################
 # Parameter Store (SSM Parameters)
@@ -345,22 +347,22 @@ resource "aws_ssm_parameter" "satellite_db_name_param" {
 ############################################
 
 # Explanation: Secrets Manager is satellite’s locked holster—credentials go here, not in code.
-# resource "aws_secretsmanager_secret" "satellite_db_secret01" {
-#   name = "${local.name_prefix}/rds/mysql"
-# }
+resource "aws_secretsmanager_secret" "satellite_db_secret01" {
+  name = "${local.name_prefix}lab/rds/mysql"
+}
 
-# # Explanation: Secret payload—students should align this structure with their app (and support rotation later).
-# resource "aws_secretsmanager_secret_version" "satellite_db_secret_version01" {
-#   secret_id = aws_secretsmanager_secret.satellite_db_secret01.id
+# Explanation: Secret payload—students should align this structure with their app (and support rotation later).
+resource "aws_secretsmanager_secret_version" "satellite_db_secret_version01" {
+  secret_id = aws_secretsmanager_secret.satellite_db_secret01.id
 
-#   secret_string = jsonencode({
-#     username = var.db_username
-#     password = var.db_password
-#     host     = aws_db_instance.satellite_rds01.address
-#     port     = aws_db_instance.satellite_rds01.port
-#     dbname   = var.db_name
-#   })
-# }
+  secret_string = jsonencode({
+    username = var.db_username
+    password = var.db_password
+    host     = aws_db_instance.satellite_rds01.address
+    port     = aws_db_instance.satellite_rds01.port
+    dbname   = var.db_name
+  })
+}
 
 ############################################
 # CloudWatch Logs (Log Group)
