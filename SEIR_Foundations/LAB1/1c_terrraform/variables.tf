@@ -7,7 +7,7 @@ variable "aws_region" {
 variable "project_name" {
   description = "Prefix for naming. Students should change from 'satellite' to their own."
   type        = string
-  default     = "satellite-6"
+  default     = "satellite"
 }
 
 variable "vpc_cidr" {
