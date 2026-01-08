@@ -183,13 +183,13 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_ssh" {
 ############################################
 
 # HTTPS outbound for AWS APIs (Secrets Manager/SSM/CloudWatch) + package repos
-resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_https" {
-  ip_protocol       = local.tcp_protocol
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
-  from_port         = local.ports_https
-  to_port           = local.ports_https
-  cidr_ipv4         = local.all_ip_address
-}
+# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_https" {
+#   ip_protocol       = local.tcp_protocol
+#   security_group_id = aws_security_group.satellite_ec2_sg01.id
+#   from_port         = local.ports_https
+#   to_port           = local.ports_https
+#   cidr_ipv4         = local.all_ip_address
+# }
 
 resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_http" {
   ip_protocol       = local.tcp_protocol
@@ -199,30 +199,30 @@ resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_http" {
   cidr_ipv4         = local.all_ip_address
 }
 
-resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_dns_udp" {
-  ip_protocol       = local.udp_protocol
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
-  from_port         = local.ports_dns
-  to_port           = local.ports_dns
-  cidr_ipv4         = local.all_ip_address
-}
+# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_dns_udp" {
+#   ip_protocol       = local.udp_protocol
+#   security_group_id = aws_security_group.satellite_ec2_sg01.id
+#   from_port         = local.ports_dns
+#   to_port           = local.ports_dns
+#   cidr_ipv4         = local.all_ip_address
+# }
 
-resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_dns_tcp" {
-  ip_protocol       = local.tcp_protocol
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
-  from_port         = local.ports_dns
-  to_port           = local.ports_dns
-  cidr_ipv4         = local.all_ip_address
-}
+# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_dns_tcp" {
+#   ip_protocol       = local.tcp_protocol
+#   security_group_id = aws_security_group.satellite_ec2_sg01.id
+#   from_port         = local.ports_dns
+#   to_port           = local.ports_dns
+#   cidr_ipv4         = local.all_ip_address
+# }
 
-# DB connectivity from EC2 -> RDS SG on 3306
-resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
-  ip_protocol                  = local.tcp_protocol
-  security_group_id            = aws_security_group.satellite_ec2_sg01.id
-  from_port                    = local.db_port
-  to_port                      = local.db_port
-  referenced_security_group_id = aws_security_group.satellite_rds_sg01.id
-}
+# # DB connectivity from EC2 -> RDS SG on 3306
+# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
+#   ip_protocol                  = local.tcp_protocol
+#   security_group_id            = aws_security_group.satellite_ec2_sg01.id
+#   from_port                    = local.db_port
+#   to_port                      = local.db_port
+#   referenced_security_group_id = aws_security_group.satellite_rds_sg01.id
+# }
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
 resource "aws_security_group" "satellite_rds_sg01" {
