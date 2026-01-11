@@ -1,31 +1,31 @@
 variable "aws_region" {
-  description = "AWS Region for the Chewbacca fleet to patrol."
+  description = "AWS Region for the satellite fleet to patrol."
   type        = string
   default     = "us-east-1"
 }
 
 variable "project_name" {
-  description = "Prefix for naming. Students should change from 'chewbacca' to their own."
+  description = "Prefix for naming. Students should change from 'satellite' to their own."
   type        = string
-  default     = "chewbacca"
+  default     = "satellite"
 }
 
 variable "vpc_cidr" {
   description = "VPC CIDR (use 10.x.x.x/xx as instructed)."
   type        = string
-  default     = "10.0.0.0/16" # TODO: student supplies
+  default     = "10.20.0.0/16" # TODO: student supplies
 }
 
 variable "public_subnet_cidrs" {
   description = "Public subnet CIDRs (use 10.x.x.x/xx)."
   type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24"] # TODO: student supplies
+  default     = ["10.20.1.0/24", "10.20.2.0/24"] # TODO: student supplies
 }
 
 variable "private_subnet_cidrs" {
   description = "Private subnet CIDRs (use 10.x.x.x/xx)."
   type        = list(string)
-  default     = ["10.0.101.0/24", "10.0.102.0/24"] # TODO: student supplies
+  default     = ["10.20.11.0/24", "10.20.12.0/24"] # TODO: student supplies
 }
 
 variable "azs" {
@@ -37,7 +37,7 @@ variable "azs" {
 variable "ec2_ami_id" {
   description = "AMI ID for the EC2 app host."
   type        = string
-  default     = "ami-REPLACE_ME" # TODO
+  default     = "ami-068c0051b15cdb816" # TODO
 }
 
 variable "ec2_instance_type" {
@@ -74,11 +74,16 @@ variable "db_password" {
   description = "DB master password (DO NOT hardcode in real life; for lab only)."
   type        = string
   sensitive   = true
-  default     = "REPLACE_ME" # TODO: student supplies
+  default     = "sophiekingdom5" # TODO: student supplies
 }
 
 variable "sns_email_endpoint" {
   description = "Email for SNS subscription (PagerDuty simulation)."
   type        = string
-  default     = "student@example.com" # TODO: student supplies
+  default     = "kevinwillocks@gmail.com" # TODO: student supplies
+}
+
+variable "my_ip_cidr" {
+  description = "Your device's IP in CIDR"
+  type        = string
 }

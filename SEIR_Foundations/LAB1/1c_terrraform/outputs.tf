@@ -1,28 +1,28 @@
 # Explanation: Outputs are your mission report—what got built and where to find it.
-output "chewbacca_vpc_id" {
-  value = aws_vpc.chewbacca_vpc01.id
+output "satellite_vpc_id" {
+  value = aws_vpc.satellite_vpc01.id
 }
 
-output "chewbacca_public_subnet_ids" {
-  value = aws_subnet.chewbacca_public_subnets[*].id
+output "satellite_public_subnet_ids" {
+  value = aws_subnet.satellite_public_subnets[*].id
 }
 
-output "chewbacca_private_subnet_ids" {
-  value = aws_subnet.chewbacca_private_subnets[*].id
+output "satellite_private_subnet_ids" {
+  value = aws_subnet.satellite_private_subnets[*].id
 }
 
-output "chewbacca_ec2_instance_id" {
-  value = aws_instance.chewbacca_ec201.id
+# output "satellite_ec2_instance_id" {
+#   value = aws_instance.satellite_ec201.id
+# }
+
+output "satellite_rds_endpoint" {
+  value = aws_db_instance.satellite_rds01.address
 }
 
-output "chewbacca_rds_endpoint" {
-  value = aws_db_instance.chewbacca_rds01.address
+output "satellite_sns_topic_arn" {
+  value = aws_sns_topic.satellite_sns_topic01.arn
 }
 
-output "chewbacca_sns_topic_arn" {
-  value = aws_sns_topic.chewbacca_sns_topic01.arn
-}
-
-output "chewbacca_log_group_name" {
-  value = aws_cloudwatch_log_group.chewbacca_log_group01.name
+output "satellite_log_group_name" {
+  value = aws_cloudwatch_log_group.satellite_log_group01.name
 }
