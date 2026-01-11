@@ -61,7 +61,7 @@ variable "db_instance_class" {
 variable "db_name" {
   description = "Initial database name."
   type        = string
-  default     = "labdb" # Students can change
+  default     = "sithdb" # Students can change
 }
 
 variable "db_username" {
@@ -74,7 +74,7 @@ variable "db_password" {
   description = "DB master password (DO NOT hardcode in real life; for lab only)."
   type        = string
   sensitive   = true
-  default     = "sophiekingdom5" # TODO: student supplies
+  default     = "Quasar123!" # TODO: student supplies
 }
 
 variable "sns_email_endpoint" {
@@ -86,4 +86,10 @@ variable "sns_email_endpoint" {
 variable "my_ip_cidr" {
   description = "Your device's IP in CIDR"
   type        = string
+}
+
+variable "storage_type" {
+  default = "gp2"
+  type    = string
+  
 }
