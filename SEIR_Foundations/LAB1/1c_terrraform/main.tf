@@ -12,6 +12,7 @@ locals {
   udp_protocol = "udp"
   all_ip_address = "0.0.0.0/0"
   all_ports = "-1"
+  all_protocol = "All"
 }
 
 ############################################
@@ -176,53 +177,23 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_ssh" {
 }
 
 # Ensures outbound allows DB port to RDS SG (or allow all outbound)
-#KW 1/5 - Added Egress all rule - may need to add one for https
-
-############################################
-# EC2 SG Egress (needed for bootstrap + AWS APIs)
-############################################
-
-# HTTPS outbound for AWS APIs (Secrets Manager/SSM/CloudWatch) + package repos
-# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_https" {
+# Kevin- We should not need http, but keeping it
+# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_http" {
 #   ip_protocol       = local.tcp_protocol
 #   security_group_id = aws_security_group.satellite_ec2_sg01.id
-#   from_port         = local.ports_https
-#   to_port           = local.ports_https
+#   from_port         = local.ports_http
+#   to_port           = local.ports_http
 #   cidr_ipv4         = local.all_ip_address
 # }
 
-resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_http" {
-  ip_protocol       = local.tcp_protocol
+#Kevin- My working click ops environment
+resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
+  ip_protocol       = local.all_protocol
   security_group_id = aws_security_group.satellite_ec2_sg01.id
-  from_port         = local.ports_http
-  to_port           = local.ports_http
+  from_port         = local.all_ports
+  to_port           = local.all_ports
   cidr_ipv4         = local.all_ip_address
 }
-
-# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_dns_udp" {
-#   ip_protocol       = local.udp_protocol
-#   security_group_id = aws_security_group.satellite_ec2_sg01.id
-#   from_port         = local.ports_dns
-#   to_port           = local.ports_dns
-#   cidr_ipv4         = local.all_ip_address
-# }
-
-# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_dns_tcp" {
-#   ip_protocol       = local.tcp_protocol
-#   security_group_id = aws_security_group.satellite_ec2_sg01.id
-#   from_port         = local.ports_dns
-#   to_port           = local.ports_dns
-#   cidr_ipv4         = local.all_ip_address
-# }
-
-# # DB connectivity from EC2 -> RDS SG on 3306
-# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
-#   ip_protocol                  = local.tcp_protocol
-#   security_group_id            = aws_security_group.satellite_ec2_sg01.id
-#   from_port                    = local.db_port
-#   to_port                      = local.db_port
-#   referenced_security_group_id = aws_security_group.satellite_rds_sg01.id
-# }
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
 resource "aws_security_group" "satellite_rds_sg01" {
@@ -392,7 +363,7 @@ resource "aws_ssm_parameter" "satellite_db_name_param" {
 
 # Explanation: Secrets Manager is satellite’s locked holster—credentials go here, not in code.
 resource "aws_secretsmanager_secret" "satellite_db_secret01" {
-  name = "lab/rds/mysql"
+  name = "lab3/rds/mysql"
 }
 
 # Explanation: Secret payload—students should align this structure with their app (and support rotation later).
