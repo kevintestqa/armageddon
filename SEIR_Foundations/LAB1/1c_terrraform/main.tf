@@ -6,7 +6,7 @@ locals {
   ports_http = 80
   ports_ssh  = 22
   ports_https = 443
-  ports_dns = 53
+  # ports_dns = 53
   db_port        = 3306
   tcp_protocol   = "tcp"
   udp_protocol = "udp"
