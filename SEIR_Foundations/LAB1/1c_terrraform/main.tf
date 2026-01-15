@@ -303,6 +303,24 @@ resource "aws_iam_instance_profile" "satellite_instance_profile01" {
   name = "${local.name_prefix}-instance-profile01"
   role = aws_iam_role.satellite_ec2_role01.name
 }
+resource "aws_iam_policy" "satellite_secrets_policy" {
+  name        = "secrets_policy"
+  description = "EC2 to RDS using Secrets Manager"
+
+  policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "ReadSpecificSecret",
+            "Effect": "Allow",
+            "Action": [
+                "secretsmanager:GetSecretValue"
+            ],
+            "Resource": "arn:aws:secretsmanager:us-east-1:461593447802:secret:lab1a/rds/mysql*"
+        }
+    ]
+})
+}
 
 ############################################
 # EC2 Instance (App Host)
@@ -366,8 +384,11 @@ resource "aws_ssm_parameter" "satellite_db_name_param" {
 ############################################
 
 # Explanation: Secrets Manager is satellite’s locked holster—credentials go here, not in code.
+#Recovery_window_in_days forces deletion of secrets and allows re-deployment of secret without constantly changing name
+
 resource "aws_secretsmanager_secret" "satellite_db_secret01" {
-  name = "lab3/rds/mysql"
+  name = "lab1a/rds/mysql"
+  recovery_window_in_days = 0
 }
 
 # Explanation: Secret payload—students should align this structure with their app (and support rotation later).
