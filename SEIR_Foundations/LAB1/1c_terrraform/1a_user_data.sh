@@ -9,10 +9,12 @@ import json
 import os
 import boto3
 import pymysql
+import traceback
 from flask import Flask, request
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 SECRET_ID = os.environ.get("SECRET_ID", "lab1a/rds/mysql")
+DB_NAME = "labdb"
 
 secrets = boto3.client("secretsmanager", region_name=REGION)
 
@@ -29,7 +31,7 @@ def get_conn():
     user = c["username"]
     password = c["password"]
     port = int(c.get("port", 3306))
-    db = c.get("dbname", "labdb")  # we'll create this if it doesn't exist
+    db = DB_NAME  # we'll create this if it doesn't exist
     return pymysql.connect(host=host, user=user, password=password, port=port, database=db, autocommit=True)
 
 app = Flask(__name__)
@@ -54,8 +56,8 @@ def init_db():
         # connect without specifying a DB first
         conn = pymysql.connect(host=host, user=user, password=password, port=port, autocommit=True)
         cur = conn.cursor()
-        cur.execute("CREATE DATABASE IF NOT EXISTS labdb;")
-        cur.execute("USE labdb;")
+        cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME};")
+        cur.execute(f"USE {DB_NAME};")
         cur.execute("""
             CREATE TABLE IF NOT EXISTS notes (
                 id INT AUTO_INCREMENT PRIMARY KEY,
