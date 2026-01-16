@@ -91,5 +91,4 @@ variable "my_ip_cidr" {
 variable "storage_type" {
   default = "gp2"
   type    = string
-  
 }

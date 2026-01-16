@@ -2,17 +2,17 @@
 # Locals (naming convention: satellite-*)
 ############################################
 locals {
-  name_prefix    = var.project_name
-  ports_http = 80
-  ports_ssh  = 22
+  name_prefix = var.project_name
+  ports_http  = 80
+  ports_ssh   = 22
   ports_https = 443
   # ports_dns = 53
   db_port        = 3306
   tcp_protocol   = "tcp"
-  udp_protocol = "udp"
+  udp_protocol   = "udp"
   all_ip_address = "0.0.0.0/0"
-  all_ports = "-1"
-  all_protocol = "All"
+  all_ports      = "-1"
+  all_protocol   = "All"
 }
 
 ############################################
@@ -213,7 +213,7 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_rds_sg_ingress_mysql" 
   security_group_id            = aws_security_group.satellite_rds_sg01.id
   from_port                    = local.db_port
   to_port                      = local.db_port
-  referenced_security_group_id = aws_security_group.satellite_ec2_sg01.id
+  referenced_security_group_id = aws_security_group.satellite_ec2_sg01.id #allow traffic ONLY from specified SG
 }
 
 
@@ -237,16 +237,16 @@ resource "aws_db_subnet_group" "satellite_rds_subnet_group01" {
 
 # Explanation: This is the holocron of state—your relational data lives here, not on the EC2.
 resource "aws_db_instance" "satellite_rds01" {
-  identifier        = "${local.name_prefix}-rds01"
-  engine            = var.db_engine
-  instance_class    = var.db_instance_class
-  storage_type      = var.storage_type
-  allocated_storage = 20
-  backup_retention_period = 7
-  db_name           = var.db_name
-  username          = var.db_username
-  password          = var.db_password
-  multi_az          = true
+  identifier               = "${local.name_prefix}-rds01"
+  engine                   = var.db_engine
+  instance_class           = var.db_instance_class
+  storage_type             = var.storage_type
+  allocated_storage        = 20
+  backup_retention_period  = 7
+  db_name                  = var.db_name
+  username                 = var.db_username
+  password                 = var.db_password
+  multi_az                 = true
   delete_automated_backups = false
 
   db_subnet_group_name   = aws_db_subnet_group.satellite_rds_subnet_group01.name
@@ -303,6 +303,24 @@ resource "aws_iam_instance_profile" "satellite_instance_profile01" {
   name = "${local.name_prefix}-instance-profile01"
   role = aws_iam_role.satellite_ec2_role01.name
 }
+resource "aws_iam_policy" "satellite_secrets_policy" {
+  name        = "secrets_policy"
+  description = "EC2 to RDS using Secrets Manager"
+
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "ReadSpecificSecret",
+        "Effect" : "Allow",
+        "Action" : [
+          "secretsmanager:GetSecretValue"
+        ],
+        "Resource" : "arn:aws:secretsmanager:us-east-1:461593447802:secret:lab1a/rds/mysql*"
+      }
+    ]
+  })
+}
 
 ############################################
 # EC2 Instance (App Host)
@@ -310,14 +328,16 @@ resource "aws_iam_instance_profile" "satellite_instance_profile01" {
 
 # Explanation: This is your “Han Solo box”—it talks to RDS and complains loudly when the DB is down.
 resource "aws_instance" "satellite_ec201" {
-  ami                    = var.ec2_ami_id
-  instance_type          = var.ec2_instance_type
-  subnet_id              = aws_subnet.satellite_public_subnets[0].id
-  vpc_security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
-  iam_instance_profile   = aws_iam_instance_profile.satellite_instance_profile01.name
+  ami                         = var.ec2_ami_id
+  instance_type               = var.ec2_instance_type
+  subnet_id                   = aws_subnet.satellite_public_subnets[0].id
+  vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg01.id]
+  iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
+  user_data_replace_on_change = true
 
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
-  user_data = file("${path.module}/1a_user_data.sh")
+  user_data  = file("${path.module}/1a_user_data.sh")
+  depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
     Name = "${local.name_prefix}-ec201"
@@ -366,8 +386,11 @@ resource "aws_ssm_parameter" "satellite_db_name_param" {
 ############################################
 
 # Explanation: Secrets Manager is satellite’s locked holster—credentials go here, not in code.
+#Recovery_window_in_days forces deletion of secrets and allows re-deployment of secret without constantly changing name
+
 resource "aws_secretsmanager_secret" "satellite_db_secret01" {
-  name = "lab3/rds/mysql"
+  name                    = "lab1a/rds/mysql"
+  recovery_window_in_days = 0
 }
 
 # Explanation: Secret payload—students should align this structure with their app (and support rotation later).
