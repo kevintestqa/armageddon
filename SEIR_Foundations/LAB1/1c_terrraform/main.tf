@@ -388,6 +388,7 @@ resource "aws_instance" "satellite_ec_03" {
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
   #user_data_replace_on_change = true
   associate_public_ip_address = false
+  key_name = "satellite-key"
   
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
   #user_data  = file("${path.module}/1a_user_data.sh")
@@ -526,7 +527,7 @@ resource "aws_vpc_endpoint" "satellite_vpce_ssm" {
   service_name      = "com.amazonaws.${var.aws_region}.ssm"
   vpc_endpoint_type = "Interface"
   subnet_ids        = aws_subnet.satellite_private_subnets[*].id
-  security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+  security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
 
   tags = {
     Name = "${local.name_prefix}-vpce-ssm"
@@ -537,7 +538,7 @@ resource "aws_vpc_endpoint" "satellite_vpce_logs" {
   service_name      = "com.amazonaws.${var.aws_region}.secretsmanager"
   vpc_endpoint_type = "Interface"
   subnet_ids        = aws_subnet.satellite_private_subnets[*].id
-  security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+  security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
 
   tags = {
     Name = "${local.name_prefix}-vpce-sm"
@@ -548,7 +549,7 @@ resource "aws_vpc_endpoint" "satellite_vpce_secretsmanager" {
   service_name      = "com.amazonaws.${var.aws_region}.logs"
   vpc_endpoint_type = "Interface"
   subnet_ids        = aws_subnet.satellite_private_subnets[*].id
-  security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+  security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
 
   tags = {
     Name = "${local.name_prefix}-vpce-logs"
@@ -575,6 +576,6 @@ resource "tls_private_key" "example" {
 }
 
 resource "aws_key_pair" "satellite_key_pair" {
-  key_name = "satellite_key"
-  public_key = "satellite_key_public"
+  key_name = "satellite-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41"
 }
