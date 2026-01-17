@@ -189,8 +189,8 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_bastion_host_sg_ingres
 resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_private_ssh" {
   ip_protocol                  = local.tcp_protocol
   security_group_id            = aws_security_group.satellite_ec2_sg02.id
-  from_port                    = local.db_port
-  to_port                      = local.db_port
+  from_port                    = local.ports_ssh
+  to_port                      = local.ports_ssh
   referenced_security_group_id = aws_security_group.satellite_ec2_sg02.id #allow traffic ONLY from specified SG
 }
 
@@ -346,24 +346,24 @@ resource "aws_iam_policy" "satellite_secrets_policy" {
 ############################################
 
 # Explanation: This is your “Han Solo box”—it talks to RDS and complains loudly when the DB is down.
-resource "aws_instance" "satellite_bastion_host_ec202" {
+resource "aws_instance" "satellite_bastion_host_ec2_02" {
   ami                         = var.ec2_ami_id
   instance_type               = var.ec2_instance_type
   subnet_id                   = aws_subnet.satellite_public_subnets[0].id
-  vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg01.id]
+  vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg02.id]
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
   # user_data_replace_on_change = true
   associate_public_ip_address = true
   
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
-  # user_data  = file("${path.module}/1a_user_data.sh")
+  // user_data  = file("${path.module}/1a_user_data.sh")
   # depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
     Name = "${local.name_prefix}-bastion-host"
   }
 }
-resource "aws_instance" "satellite_ec201" {
+resource "aws_instance" "satellite_ec2_01" {
   ami                         = var.ec2_ami_id
   instance_type               = var.ec2_instance_type
   subnet_id                   = aws_subnet.satellite_public_subnets[0].id
@@ -377,24 +377,24 @@ resource "aws_instance" "satellite_ec201" {
   depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
-    Name = "${local.name_prefix}-ec201"
+    Name = "${local.name_prefix}-ec2_01"
   }
 }
-resource "aws_instance" "satellite_ec03" {
+resource "aws_instance" "satellite_ec_03" {
   ami                         = var.ec2_ami_id
   instance_type               = var.ec2_instance_type
   subnet_id                   = aws_subnet.satellite_private_subnets[0].id
   vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg02.id]
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
-  user_data_replace_on_change = true
+  #user_data_replace_on_change = true
   associate_public_ip_address = false
   
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
-  user_data  = file("${path.module}/1a_user_data.sh")
+  #user_data  = file("${path.module}/1a_user_data.sh")
   # depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
-    Name = "${local.name_prefix}-ec03"
+    Name = "${local.name_prefix}-ec2_03"
   }
 }
 
@@ -563,4 +563,18 @@ resource "aws_vpc_endpoint" "s3_endpoint" {
   tags = {
     Name = "${local.name_prefix}-vpce-s3"
   }
+}
+
+############################################
+# Key Pair 
+############################################
+
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "satellite_key_pair" {
+  key_name = "satellite_key"
+  public_key = "satellite_key_public"
 }
