@@ -49,7 +49,7 @@ resource "aws_subnet" "satellite_public_subnets" {
   vpc_id                  = aws_vpc.satellite_vpc01.id
   cidr_block              = var.public_subnet_cidrs[count.index]
   availability_zone       = var.azs[count.index]
-  map_public_ip_on_launch = true
+  map_public_ip_on_launch = false
 
   tags = {
     Name = "${local.name_prefix}-public-subnet0${count.index + 1}"
@@ -62,6 +62,8 @@ resource "aws_subnet" "satellite_private_subnets" {
   vpc_id            = aws_vpc.satellite_vpc01.id
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = var.azs[count.index]
+  
+  
 
   tags = {
     Name = "${local.name_prefix}-private-subnet0${count.index + 1}"
@@ -157,6 +159,15 @@ resource "aws_security_group" "satellite_ec2_sg01" {
     Name = "${local.name_prefix}-ec2-sg01"
   }
 }
+resource "aws_security_group" "satellite_ec2_sg02" {
+  name        = "${local.name_prefix}-ec2-sg02"
+  description = "EC2 app security group"
+  vpc_id      = aws_vpc.satellite_vpc01.id
+
+  tags = {
+    Name = "${local.name_prefix}-ec2-sg02"
+  }
+}
 
 # Adds inbound rules (HTTP 80, SSH 22 from their IP)
 
@@ -168,13 +179,21 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
   cidr_ipv4         = local.all_ip_address
 }
 
-resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_ssh" {
+resource "aws_vpc_security_group_ingress_rule" "satellite_bastion_host_sg_ingress_ssh" {
   ip_protocol       = local.tcp_protocol
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
+  security_group_id = aws_security_group.satellite_ec2_sg02.id
   from_port         = local.ports_ssh
   to_port           = local.ports_ssh
   cidr_ipv4         = var.my_ip_cidr
 }
+resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_private_ssh" {
+  ip_protocol                  = local.tcp_protocol
+  security_group_id            = aws_security_group.satellite_ec2_sg02.id
+  from_port                    = local.db_port
+  to_port                      = local.db_port
+  referenced_security_group_id = aws_security_group.satellite_ec2_sg02.id #allow traffic ONLY from specified SG
+}
+
 
 # Ensures outbound allows DB port to RDS SG (or allow all outbound)
 # Kevin- We should not need http, but keeping it
@@ -327,6 +346,23 @@ resource "aws_iam_policy" "satellite_secrets_policy" {
 ############################################
 
 # Explanation: This is your “Han Solo box”—it talks to RDS and complains loudly when the DB is down.
+resource "aws_instance" "satellite_bastion_host_ec202" {
+  ami                         = var.ec2_ami_id
+  instance_type               = var.ec2_instance_type
+  subnet_id                   = aws_subnet.satellite_public_subnets[0].id
+  vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg01.id]
+  iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
+  # user_data_replace_on_change = true
+  associate_public_ip_address = true
+  
+  # TODO: student supplies user_data to install app + CW agent + configure log shipping
+  # user_data  = file("${path.module}/1a_user_data.sh")
+  # depends_on = [aws_db_instance.satellite_rds01]
+
+  tags = {
+    Name = "${local.name_prefix}-bastion-host"
+  }
+}
 resource "aws_instance" "satellite_ec201" {
   ami                         = var.ec2_ami_id
   instance_type               = var.ec2_instance_type
@@ -334,7 +370,8 @@ resource "aws_instance" "satellite_ec201" {
   vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg01.id]
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
   user_data_replace_on_change = true
-
+  associate_public_ip_address = true
+  
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
   user_data  = file("${path.module}/1a_user_data.sh")
   depends_on = [aws_db_instance.satellite_rds01]
@@ -343,6 +380,24 @@ resource "aws_instance" "satellite_ec201" {
     Name = "${local.name_prefix}-ec201"
   }
 }
+resource "aws_instance" "satellite_ec03" {
+  ami                         = var.ec2_ami_id
+  instance_type               = var.ec2_instance_type
+  subnet_id                   = aws_subnet.satellite_private_subnets[0].id
+  vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg02.id]
+  iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
+  user_data_replace_on_change = true
+  associate_public_ip_address = false
+  
+  # TODO: student supplies user_data to install app + CW agent + configure log shipping
+  user_data  = file("${path.module}/1a_user_data.sh")
+  # depends_on = [aws_db_instance.satellite_rds01]
+
+  tags = {
+    Name = "${local.name_prefix}-ec03"
+  }
+}
+
 
 ############################################
 # Parameter Store (SSM Parameters)
@@ -466,3 +521,46 @@ resource "aws_sns_topic_subscription" "satellite_sns_sub01" {
 # Explanation: Endpoints keep traffic inside AWS like hyperspace lanes—less exposure, more control.
 # TODO: students can add endpoints for SSM, Logs, Secrets Manager if doing “no public egress” variant.
 # resource "aws_vpc_endpoint" "satellite_vpce_ssm" { ... }
+resource "aws_vpc_endpoint" "satellite_vpce_ssm" {
+  vpc_id            = aws_vpc.satellite_vpc01.id
+  service_name      = "com.amazonaws.${var.aws_region}.ssm"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = aws_subnet.satellite_private_subnets[*].id
+  security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+
+  tags = {
+    Name = "${local.name_prefix}-vpce-ssm"
+  }
+}
+resource "aws_vpc_endpoint" "satellite_vpce_logs" {
+  vpc_id            = aws_vpc.satellite_vpc01.id
+  service_name      = "com.amazonaws.${var.aws_region}.secretsmanager"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = aws_subnet.satellite_private_subnets[*].id
+  security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+
+  tags = {
+    Name = "${local.name_prefix}-vpce-sm"
+  }
+}
+resource "aws_vpc_endpoint" "satellite_vpce_secretsmanager" {
+  vpc_id            = aws_vpc.satellite_vpc01.id
+  service_name      = "com.amazonaws.${var.aws_region}.logs"
+  vpc_endpoint_type = "Interface"
+  subnet_ids        = aws_subnet.satellite_private_subnets[*].id
+  security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+
+  tags = {
+    Name = "${local.name_prefix}-vpce-logs"
+  }
+}
+resource "aws_vpc_endpoint" "s3_endpoint" {
+  vpc_id            = aws_vpc.satellite_vpc01.id
+  service_name      = "com.amazonaws.${var.aws_region}.s3"
+  vpc_endpoint_type = "Gateway"
+  route_table_ids   = [aws_route_table.satellite_private_rt01.id]
+
+  tags = {
+    Name = "${local.name_prefix}-vpce-s3"
+  }
+}
