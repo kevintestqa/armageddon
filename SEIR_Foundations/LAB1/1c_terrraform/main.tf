@@ -179,20 +179,20 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
   cidr_ipv4         = local.all_ip_address
 }
 
-resource "aws_vpc_security_group_ingress_rule" "satellite_bastion_host_sg_ingress_ssh" {
-  ip_protocol       = local.tcp_protocol
-  security_group_id = aws_security_group.satellite_ec2_sg02.id
-  from_port         = local.ports_ssh
-  to_port           = local.ports_ssh
-  cidr_ipv4         = var.my_ip_cidr
-}
-resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_private_ssh" {
-  ip_protocol                  = local.tcp_protocol
-  security_group_id            = aws_security_group.satellite_ec2_sg02.id
-  from_port                    = local.ports_ssh
-  to_port                      = local.ports_ssh
-  referenced_security_group_id = aws_security_group.satellite_ec2_sg02.id #allow traffic ONLY from specified SG
-}
+# resource "aws_vpc_security_group_ingress_rule" "satellite_bastion_host_sg_ingress_ssh" {
+#   ip_protocol       = local.tcp_protocol
+#   security_group_id = aws_security_group.satellite_ec2_sg02.id
+#   from_port         = local.ports_ssh
+#   to_port           = local.ports_ssh
+#   cidr_ipv4         = var.my_ip_cidr
+# }
+# resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_private_ssh" {
+#   ip_protocol                  = local.tcp_protocol
+#   security_group_id            = aws_security_group.satellite_ec2_sg02.id
+#   from_port                    = local.ports_ssh
+#   to_port                      = local.ports_ssh
+#   referenced_security_group_id = aws_security_group.satellite_ec2_sg02.id #allow traffic ONLY from specified SG
+# }
 
 
 # Ensures outbound allows DB port to RDS SG (or allow all outbound)
@@ -298,12 +298,28 @@ resource "aws_iam_role" "satellite_ec2_role01" {
     }]
   })
 }
+resource "aws_iam_role" "satellite_ec2_role02" {
+  name = "${local.name_prefix}-ec2-role02"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
 
 # Explanation: These policies are your Wookiee toolbelt—tighten them (least privilege) as a stretch goal.
 resource "aws_iam_role_policy_attachment" "satellite_ec2_ssm_attach" {
   role       = aws_iam_role.satellite_ec2_role01.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
+# resource "aws_iam_role_policy_attachment" "satellite_ec2_ssm_attach02" {
+#   role       = aws_iam_role.satellite_ec2_role02.name
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+# }
 
 # Explanation: EC2 must read secrets/params during recovery—give it access (students should scope it down).
 resource "aws_iam_role_policy_attachment" "satellite_ec2_secrets_attach" {
@@ -321,6 +337,10 @@ resource "aws_iam_role_policy_attachment" "satellite_ec2_cw_attach" {
 resource "aws_iam_instance_profile" "satellite_instance_profile01" {
   name = "${local.name_prefix}-instance-profile01"
   role = aws_iam_role.satellite_ec2_role01.name
+}
+resource "aws_iam_instance_profile" "satellite_instance_profile02" {
+  name = "${local.name_prefix}-instance-profile02"
+  role = aws_iam_role.satellite_ec2_role02.name
 }
 resource "aws_iam_policy" "satellite_secrets_policy" {
   name        = "secrets_policy"
@@ -385,7 +405,7 @@ resource "aws_instance" "satellite_ec_03" {
   instance_type               = var.ec2_instance_type
   subnet_id                   = aws_subnet.satellite_private_subnets[0].id
   vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg02.id]
-  iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
+  iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile02.name
   #user_data_replace_on_change = true
   associate_public_ip_address = false
   key_name = "satellite-key"
@@ -522,60 +542,3 @@ resource "aws_sns_topic_subscription" "satellite_sns_sub01" {
 # Explanation: Endpoints keep traffic inside AWS like hyperspace lanes—less exposure, more control.
 # TODO: students can add endpoints for SSM, Logs, Secrets Manager if doing “no public egress” variant.
 # resource "aws_vpc_endpoint" "satellite_vpce_ssm" { ... }
-resource "aws_vpc_endpoint" "satellite_vpce_ssm" {
-  vpc_id            = aws_vpc.satellite_vpc01.id
-  service_name      = "com.amazonaws.${var.aws_region}.ssm"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.satellite_private_subnets[*].id
-  security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
-
-  tags = {
-    Name = "${local.name_prefix}-vpce-ssm"
-  }
-}
-resource "aws_vpc_endpoint" "satellite_vpce_logs" {
-  vpc_id            = aws_vpc.satellite_vpc01.id
-  service_name      = "com.amazonaws.${var.aws_region}.secretsmanager"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.satellite_private_subnets[*].id
-  security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
-
-  tags = {
-    Name = "${local.name_prefix}-vpce-sm"
-  }
-}
-resource "aws_vpc_endpoint" "satellite_vpce_secretsmanager" {
-  vpc_id            = aws_vpc.satellite_vpc01.id
-  service_name      = "com.amazonaws.${var.aws_region}.logs"
-  vpc_endpoint_type = "Interface"
-  subnet_ids        = aws_subnet.satellite_private_subnets[*].id
-  security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
-
-  tags = {
-    Name = "${local.name_prefix}-vpce-logs"
-  }
-}
-resource "aws_vpc_endpoint" "s3_endpoint" {
-  vpc_id            = aws_vpc.satellite_vpc01.id
-  service_name      = "com.amazonaws.${var.aws_region}.s3"
-  vpc_endpoint_type = "Gateway"
-  route_table_ids   = [aws_route_table.satellite_private_rt01.id]
-
-  tags = {
-    Name = "${local.name_prefix}-vpce-s3"
-  }
-}
-
-############################################
-# Key Pair 
-############################################
-
-resource "tls_private_key" "example" {
-  algorithm = "RSA"
-  rsa_bits  = 4096
-}
-
-resource "aws_key_pair" "satellite_key_pair" {
-  key_name = "satellite-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD3F6tyPEFEzV0LX3X8BsXdMsQz1x2cEikKDEY0aIj41qgxMCP/iteneqXSIFZBp5vizPvaoIR3Um9xK7PGoW8giupGn+EPuxIA4cDM4vzOqOkiMPhz5XK0whEjkVzTo4+S0puvDZuwIsdiW9mxhJc7tgBNL0cYlWSYVkz4G/fslNfRPW5mYAM49f4fhtxPb5ok4Q2Lg9dPKVHO/Bgeu5woMc7RY0p1ej6D4CKFE6lymSDJpW0YHX/wqE9+cfEauh7xZcG0q9t2ta6F6fmX0agvpFyZo8aFbXeUBr7osSCJNgvavWbM/06niWrOvYX2xwWdhXmXSrbX8ZbabVohBK41"
-}
