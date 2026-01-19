@@ -80,7 +80,7 @@ variable "db_password" {
 variable "sns_email_endpoint" {
   description = "Email for SNS subscription (PagerDuty simulation)."
   type        = string
-  default     = "kryptok85@gmail.com" # TODO: student supplies
+  default     = "kevinwillocks@gmail.com" # TODO: student supplies
 }
 
 variable "my_ip_cidr" {
@@ -91,4 +91,14 @@ variable "my_ip_cidr" {
 variable "storage_type" {
   default = "gp2"
   type    = string
+}
+
+variable "hosted_zone_id" {
+  type = string
+  default = "Z0756527XY5EXU462HMZ"
+}
+
+variable "all_ip_address" {
+  type = string
+  default = "0.0.0.0/0"
 }

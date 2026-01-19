@@ -6,7 +6,7 @@ locals {
   ports_http  = 80
   ports_ssh   = 22
   ports_https = 443
-  # ports_dns = 53
+  ports_dns = 53
   db_port        = 3306
   tcp_protocol   = "tcp"
   udp_protocol   = "udp"
@@ -179,33 +179,6 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
   cidr_ipv4         = local.all_ip_address
 }
 
-# resource "aws_vpc_security_group_ingress_rule" "satellite_bastion_host_sg_ingress_ssh" {
-#   ip_protocol       = local.tcp_protocol
-#   security_group_id = aws_security_group.satellite_ec2_sg02.id
-#   from_port         = local.ports_ssh
-#   to_port           = local.ports_ssh
-#   cidr_ipv4         = var.my_ip_cidr
-# }
-# resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_private_ssh" {
-#   ip_protocol                  = local.tcp_protocol
-#   security_group_id            = aws_security_group.satellite_ec2_sg02.id
-#   from_port                    = local.ports_ssh
-#   to_port                      = local.ports_ssh
-#   referenced_security_group_id = aws_security_group.satellite_ec2_sg02.id #allow traffic ONLY from specified SG
-# }
-
-
-# Ensures outbound allows DB port to RDS SG (or allow all outbound)
-# Kevin- We should not need http, but keeping it
-# resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_http" {
-#   ip_protocol       = local.tcp_protocol
-#   security_group_id = aws_security_group.satellite_ec2_sg01.id
-#   from_port         = local.ports_http
-#   to_port           = local.ports_http
-#   cidr_ipv4         = local.all_ip_address
-# }
-
-#Kevin- My working click ops environment
 resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
   ip_protocol       = local.all_protocol
   security_group_id = aws_security_group.satellite_ec2_sg01.id
@@ -234,7 +207,6 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_rds_sg_ingress_mysql" 
   to_port                      = local.db_port
   referenced_security_group_id = aws_security_group.satellite_ec2_sg01.id #allow traffic ONLY from specified SG
 }
-
 
 ############################################
 # RDS Subnet Group
@@ -298,28 +270,12 @@ resource "aws_iam_role" "satellite_ec2_role01" {
     }]
   })
 }
-resource "aws_iam_role" "satellite_ec2_role02" {
-  name = "${local.name_prefix}-ec2-role02"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Effect    = "Allow"
-      Principal = { Service = "ec2.amazonaws.com" }
-      Action    = "sts:AssumeRole"
-    }]
-  })
-}
 
 # Explanation: These policies are your Wookiee toolbelt—tighten them (least privilege) as a stretch goal.
 resource "aws_iam_role_policy_attachment" "satellite_ec2_ssm_attach" {
   role       = aws_iam_role.satellite_ec2_role01.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
-# resource "aws_iam_role_policy_attachment" "satellite_ec2_ssm_attach02" {
-#   role       = aws_iam_role.satellite_ec2_role02.name
-#   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-# }
 
 # Explanation: EC2 must read secrets/params during recovery—give it access (students should scope it down).
 resource "aws_iam_role_policy_attachment" "satellite_ec2_secrets_attach" {
@@ -408,7 +364,6 @@ resource "aws_instance" "satellite_ec_03" {
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile02.name
   #user_data_replace_on_change = true
   associate_public_ip_address = false
-  key_name = "satellite-key"
   
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
   #user_data  = file("${path.module}/1a_user_data.sh")
