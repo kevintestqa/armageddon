@@ -274,4 +274,5 @@ resource "aws_iam_role_policy_attachment" "satellite_attach_lp_secret01" {
 resource "aws_iam_role_policy_attachment" "satellite_attach_lp_cwlogs01" {
   role       = aws_iam_role.satellite_ec2_role01.name
   policy_arn = aws_iam_policy.satellite_leastpriv_cwlogs01.arn
+  
 }
