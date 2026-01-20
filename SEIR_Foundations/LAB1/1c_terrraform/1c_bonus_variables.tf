@@ -5,9 +5,9 @@ variable "domain_name" {
 }
 
 variable "app_subdomain" {
-  description = "App hostname prefix (e.g., app.pawserenity.click)."
+  description = "App hostname prefix (e.g., www.pawserenity.click)."
   type        = string
-  default     = "app"
+  default     = "www."
 }
 
 variable "certificate_validation_method" {

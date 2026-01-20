@@ -94,11 +94,11 @@ variable "storage_type" {
 }
 
 variable "hosted_zone_id" {
-  type = string
+  type    = string
   default = "Z0756527XY5EXU462HMZ"
 }
 
 variable "all_ip_address" {
-  type = string
+  type    = string
   default = "0.0.0.0/0"
 }

@@ -4,7 +4,7 @@
 
 locals {
   # Explanation: This is the roar address — where the galaxy finds your app.
-  satellite_fqdn = "${var.app_subdomain}.${var.domain_name}"
+  satellite_fqdn = "${trim(var.app_subdomain, ".")}.${var.domain_name}" 
 }
 
 # ############################################
@@ -22,7 +22,7 @@ resource "aws_security_group" "satellite_alb_sg01" {
   }
 }
 
-  resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_http" {
+resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_http" {
   ip_protocol       = local.tcp_protocol
   security_group_id = aws_security_group.satellite_alb_sg01.id
   from_port         = local.ports_http
@@ -30,7 +30,7 @@ resource "aws_security_group" "satellite_alb_sg01" {
   cidr_ipv4         = var.all_ip_address
 }
 
- resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_https" {
+resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_https" {
   ip_protocol       = local.tcp_protocol
   security_group_id = aws_security_group.satellite_alb_sg01.id
   from_port         = local.ports_https
@@ -38,18 +38,17 @@ resource "aws_security_group" "satellite_alb_sg01" {
   cidr_ipv4         = var.all_ip_address
 }
 
-  # TODO: students set outbound to target group port (usually 80) to private targets
-  # Kevin: Need to investigate this further
-  resource "aws_vpc_security_group_egress_rule" "satellite_alb_egress_http" {
-  ip_protocol       = local.tcp_protocol
-  security_group_id = aws_security_group.satellite_alb_sg01.id
+# TODO: students set outbound to target group port (usually 80) to private targets
+# Kevin: Need to investigate this further
+resource "aws_vpc_security_group_egress_rule" "satellite_alb_egress_http" {
+  ip_protocol                  = local.tcp_protocol
+  security_group_id            = aws_security_group.satellite_alb_sg01.id
   referenced_security_group_id = aws_security_group.satellite_ec2_sg01.id #where traffic is going to
-  from_port         = local.ports_http
-  to_port           = local.ports_http
-  cidr_ipv4         = local.all_ip_address
+  from_port                    = local.ports_http
+  to_port                      = aws_lb_target_group.satellite_tg01.port
 }
 
-# Explanation: Chewbacca only opens the hangar door — allow ALB -> EC2 on app port (e.g., 80).
+# Explanation: satellite only opens the hangar door — allow ALB -> EC2 on app port (e.g., 80).
 resource "aws_security_group_rule" "satellite_ec2_ingress_from_alb01" {
   type                     = "ingress"
   security_group_id        = aws_security_group.satellite_ec2_sg01.id
@@ -85,7 +84,7 @@ resource "aws_lb" "satellite_alb01" {
 # # Target Group + Attachment
 # ############################################
 
-# # Explanation: Target groups are Chewbacca’s “who do I forward to?” list — private EC2 lives here.
+# # Explanation: Target groups are satellite’s “who do I forward to?” list — private EC2 lives here.
 resource "aws_lb_target_group" "satellite_tg01" {
   name     = "${var.project_name}-tg01"
   port     = 80
@@ -110,25 +109,24 @@ resource "aws_lb_target_group" "satellite_tg01" {
   }
 }
 
-# # Explanation: Chewbacca personally introduces the ALB to the private EC2 — “this is my friend, don’t shoot.”
+# # Explanation: satellite personally introduces the ALB to the private EC2 — “this is my friend, don’t shoot.”
 resource "aws_lb_target_group_attachment" "satellite_tg_attach01" {
   target_group_arn = aws_lb_target_group.satellite_tg01.arn
   target_id        = aws_instance.satellite_ec201_private_bonus.id
-  port             = 80
+  port             = local.ports_http
 
   # TODO: students ensure EC2 security group allows inbound from ALB SG on this port (rule above)
 }
 
 # ############################################
-# # ACM Certificate (TLS) for app.chewbacca-growl.com
+# # ACM Certificate (TLS) for app.satellite-growl.com
 # ############################################
 
-# # Explanation: TLS is the diplomatic passport — browsers trust you, and Chewbacca stops growling at plaintext.
+# # Explanation: TLS is the diplomatic passport — browsers trust you, and satellite stops growling at plaintext.
 resource "aws_acm_certificate" "satellite_acm_cert01" {
-  domain_name       = local.satellite_fqdn
+  domain_name       = local.satellite_fqdn 
   validation_method = var.certificate_validation_method
-
-  subject_alternative_names = [ var.domain_name ]
+  subject_alternative_names = [var.domain_name]
 
   tags = {
     Name = "${var.project_name}-acm-cert01"
@@ -137,21 +135,38 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 
 # # Explanation: DNS validation records are the “prove you own the planet” ritual — Route53 makes this elegant.
 # # TODO: students implement aws_route53_record(s) if they manage DNS in Route53.
- resource "aws_route53_record" "satellite_acm_validation" { 
-    zone_id = var.hosted_zone_id
-    name = var.domain_name
-    type = "NS"
-    
- }
+#  resource "aws_route53_record" "satellite_acm_validation" { 
+#     zone_id = var.hosted_zone_id
+#     name = var.domain_name
+#     type = "SOA"
+#     ttl = 300
+#      records = [ "value" ]
+#  }
+
+# maybe use for multiple records
+# resource "aws_route53_record" "satellite_acm_validation" {
+#   for_each = {
+#     for domain_validation_option in aws_acm_certificate.satellite_acm_cert01.domain_validation_options : domain_validation_option.domain_name => {
+#       name   = domain_validation_option.resource_record_name
+#       record = domain_validation_option.resource_record_value
+#       type   = domain_validation_option.resource_record_type
+#     }
+#   }
+
+#   zone_id = var.hosted_zone_id
+#   name    = each.value.name
+#   type    = each.value.type
+#   ttl     = 60
+#   records = [each.value.record]
+# }
 
 
-# # Explanation: Once validated, ACM becomes the “green checkmark” — until then, ALB HTTPS won’t work.
-resource "aws_acm_certificate_validation" "satellite_acm_validation01" {
-  certificate_arn = aws_acm_certificate.satellite_acm_cert01.arn
-
-  # TODO: if using DNS validation, students must pass validation_record_fqdns
-  # validation_record_fqdns = [aws_route53_record.satellite_acm_validation.fqdn]
-}
+# Explanation: Once validated, ACM becomes the “green checkmark” — until then, ALB HTTPS won’t work.
+# Kevin - I already have pawserenity.click and it was verified
+# resource "aws_acm_certificate_validation" "satellite_acm_validation" {
+#   certificate_arn         = aws_acm_certificate.satellite_acm_cert01.arn
+#   validation_record_fqdns = [for r in aws_route53_record.satellite_acm_validation : r.fqdn]
+# }
 
 # ############################################
 # # ALB Listeners: HTTP -> HTTPS redirect, HTTPS -> TG
@@ -179,14 +194,14 @@ resource "aws_lb_listener" "satellite_https_listener01" {
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = aws_acm_certificate_validation.satellite_acm_validation01.certificate_arn
+  certificate_arn   = aws_acm_certificate.satellite_acm_cert01.arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.satellite_tg01.arn
   }
 
-  depends_on = [aws_acm_certificate_validation.satellite_acm_validation01]
+  depends_on = [aws_acm_certificate.satellite_acm_cert01]
 }
 
 # ############################################
@@ -277,28 +292,28 @@ resource "aws_cloudwatch_metric_alarm" "satellite_alb_5xx_alarm01" {
 # # CloudWatch Dashboard (Skeleton)
 # ############################################
 
-# # Explanation: Dashboards are your cockpit HUD — Chewbacca wants dials, not vibes.
- resource "aws_cloudwatch_dashboard" "satellite_dashboard01" {
-   dashboard_name = "${var.project_name}-dashboard01"
+# # Explanation: Dashboards are your cockpit HUD — satellite wants dials, not vibes.
+resource "aws_cloudwatch_dashboard" "satellite_dashboard01" {
+  dashboard_name = "${var.project_name}-dashboard01"
 
-#   # TODO: students can expand widgets; this is a minimal workable skeleton
+  #   # TODO: students can expand widgets; this is a minimal workable skeleton
   dashboard_body = jsonencode({
     widgets = [
       {
-        type  = "metric"
-        x     = 0
-        y     = 0
-        width = 12
+        type   = "metric"
+        x      = 0
+        y      = 0
+        width  = 12
         height = 6
         properties = {
           metrics = [
-            [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", aws_lb.satellite_alb01.arn_suffix ],
-            [ ".", "HTTPCode_ELB_5XX_Count", ".", aws_lb.satellite_alb01.arn_suffix ]
+            ["AWS/ApplicationELB", "RequestCount", "LoadBalancer", aws_lb.satellite_alb01.arn_suffix],
+            [".", "HTTPCode_ELB_5XX_Count", ".", aws_lb.satellite_alb01.arn_suffix]
           ]
           period = 300
           stat   = "Sum"
           region = var.aws_region
-          title  = "Chewbacca ALB: Requests + 5XX"
+          title  = "satellite ALB: Requests + 5XX"
         }
       },
       {
@@ -312,9 +327,9 @@ resource "aws_cloudwatch_metric_alarm" "satellite_alb_5xx_alarm01" {
             [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", aws_lb.satellite_alb01.arn_suffix ]
           ]
           period = 300
-          stat   = "Average"
+          stat   = "Sum"
           region = var.aws_region
-          title  = "Chewbacca ALB: Target Response Time"
+          title = "Satekkue ELB: Response time"
         }
       }
     ]
