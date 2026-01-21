@@ -58,6 +58,9 @@ A6) Rate of blocks over time (did it spike?)
 | sort hits desc
 | limit 50
 
+#edit
+fields @timestamp, httpRequest.clientIp as clientIp, httpRequest.uri as uri | filter uri =~ /wp-login|xmlrpc|\.env|admin|phpmyadmin|\.git|login/ | stats count() as hits by clientIp, uri | sort hits desc | limit 50
+
 A7) Suspicious scanners (common patterns: admin paths, wp-login, etc.)
   fields @timestamp, httpRequest.clientIp as clientIp, httpRequest.uri as uri
 | filter uri like /wp-login|xmlrpc|\.env|admin|phpmyadmin|\.git|\/login/i
