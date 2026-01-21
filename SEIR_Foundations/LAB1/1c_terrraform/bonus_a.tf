@@ -27,12 +27,13 @@ resource "aws_instance" "satellite_ec201_private_bonus" {
   subnet_id              = aws_subnet.satellite_private_subnets[0].id
   vpc_security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
   iam_instance_profile   = aws_iam_instance_profile.satellite_instance_profile01.name
+  security_groups = [aws_security_group.satellite_alb_sg01.id]
 
   # TODO: Students should remove/disable SSH inbound rules entirely and rely on SSM.
   # TODO: Students add user_data that installs app + CW agent; for true hard mode use a baked AMI.
 
   tags = {
-    Name = "${local.satellite_prefix}-ec201-private-bonus-a"
+    Name = "${local.satellite_prefix}-ec201-private-bonus-labs"
   }
 }
 

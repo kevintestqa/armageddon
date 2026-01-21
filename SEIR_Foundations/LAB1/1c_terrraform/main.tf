@@ -169,8 +169,6 @@ resource "aws_security_group" "satellite_ec2_sg02" {
   }
 }
 
-# Adds inbound rules (HTTP 80, SSH 22 from their IP)
-
 resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
   ip_protocol       = local.tcp_protocol
   security_group_id = aws_security_group.satellite_ec2_sg01.id
@@ -178,7 +176,6 @@ resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_http" {
   to_port           = local.ports_http
   cidr_ipv4         = local.all_ip_address
 }
-
 resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
   ip_protocol       = local.all_protocol
   security_group_id = aws_security_group.satellite_ec2_sg01.id
@@ -186,6 +183,19 @@ resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
   to_port           = local.all_ports
   cidr_ipv4         = local.all_ip_address
 }
+
+resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_alb" {
+  ip_protocol       = local.tcp_protocol
+  security_group_id = aws_security_group.satellite_ec2_sg01.id
+  from_port         = local.ports_http
+  to_port           = local.ports_http
+  referenced_security_group_id = aws_security_group.satellite_alb_sg01.id
+
+    tags = {
+    Name = "${local.name_prefix}-ec2-sg_ingress_alb"
+  }
+}
+
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
 resource "aws_security_group" "satellite_rds_sg01" {
@@ -350,7 +360,7 @@ resource "aws_instance" "satellite_ec2_01" {
   depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
-    Name = "${local.name_prefix}-ec2_01"
+    Name = "${local.name_prefix}-ec2_01-public"
   }
 }
 resource "aws_instance" "satellite_ec_03" {
@@ -359,7 +369,6 @@ resource "aws_instance" "satellite_ec_03" {
   subnet_id              = aws_subnet.satellite_private_subnets[0].id
   vpc_security_group_ids = [aws_security_group.satellite_ec2_sg02.id]
   iam_instance_profile   = aws_iam_instance_profile.satellite_instance_profile01.name
-  #user_data_replace_on_change = true
   associate_public_ip_address = false
 
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
@@ -367,7 +376,7 @@ resource "aws_instance" "satellite_ec_03" {
   # depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
-    Name = "${local.name_prefix}-ec2_03"
+    Name = "${local.name_prefix}-ec2_03-private"
   }
 }
 

@@ -49,16 +49,16 @@ resource "aws_vpc_security_group_egress_rule" "satellite_alb_egress_http" {
 }
 
 # Explanation: satellite only opens the hangar door — allow ALB -> EC2 on app port (e.g., 80).
-resource "aws_security_group_rule" "satellite_ec2_ingress_from_alb01" {
-  type                     = "ingress"
-  security_group_id        = aws_security_group.satellite_ec2_sg01.id
-  from_port                = local.ports_http
-  to_port                  = local.ports_http
-  protocol                 = local.tcp_protocol
-  source_security_group_id = aws_security_group.satellite_alb_sg01.id
+# resource "aws_security_group_rule" "satellite_ec2_ingress_from_alb01" {
+#   type                     = "ingress"
+#   security_group_id        = aws_security_group.satellite_ec2_sg01.id
+#   from_port                = local.ports_http
+#   to_port                  = local.ports_http
+#   protocol                 = local.tcp_protocol
+#   source_security_group_id = aws_security_group.satellite_alb_sg01.id
 
-  # TODO: students ensure EC2 app listens on this port (or change to 8080, etc.)
-}
+#   # TODO: students ensure EC2 app listens on this port (or change to 8080, etc.)
+# }
 
 # ############################################
 # # Application Load Balancer
@@ -94,7 +94,7 @@ resource "aws_lb_target_group" "satellite_tg01" {
   # TODO: students set health check path to something real (e.g., /health)
   health_check {
     enabled             = true
-    interval            = 30
+    interval            = 300 #TODO: adjust intervals to something more realistic
     path                = "/"
     port                = "traffic-port"
     protocol            = "HTTP"
