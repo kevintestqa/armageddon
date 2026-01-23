@@ -353,7 +353,6 @@ resource "aws_instance" "satellite_ec2_01" {
   vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg01.id]
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
   user_data_replace_on_change = true
-  associate_public_ip_address = true
 
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
   user_data  = file("${path.module}/1a_user_data.sh")

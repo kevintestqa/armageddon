@@ -87,7 +87,7 @@ resource "aws_lb" "satellite_alb01" {
 # # Explanation: Target groups are satellite’s “who do I forward to?” list — private EC2 lives here.
 resource "aws_lb_target_group" "satellite_tg01" {
   name     = "${var.project_name}-tg01"
-  port     = 80
+  port     = local.ports_http
   protocol = "HTTP"
   vpc_id   = aws_vpc.satellite_vpc01.id
 
@@ -98,9 +98,9 @@ resource "aws_lb_target_group" "satellite_tg01" {
     path                = "/"
     port                = "traffic-port"
     protocol            = "HTTP"
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
+    healthy_threshold   = 4
+    unhealthy_threshold = 5
+    timeout             = 120
     matcher             = "200-399"
   }
 
