@@ -9,10 +9,10 @@ data "aws_caller_identity" "satellite_self01" {}
 data "aws_region" "satellite_region01" {}
 
 locals {
-#   # Explanation: Name prefix is the roar that echoes through every tag.
+  #   # Explanation: Name prefix is the roar that echoes through every tag.
   satellite_prefix = var.project_name
 
-#   # TODO: Students should lock this down after apply using the real secret ARN from outputs/state
+  #   # TODO: Students should lock this down after apply using the real secret ARN from outputs/state
   satellite_secret_arn_guess = "arn:aws:secretsmanager:${data.aws_region.satellite_region01.name}:${data.aws_caller_identity.satellite_self01.account_id}:secret:${local.satellite_prefix}/rds/mysql*"
 }
 
@@ -20,19 +20,20 @@ locals {
 # # Move EC2 into PRIVATE subnet (no public IP)
 # ############################################
 
-# # Explanation: satellite hates exposure—private subnets keep your compute off the public holonet.
+# # Explanation: satellite hates exposure—private subnets keep your compute off the public holonet.  EC201 is used in Bonus_B
 resource "aws_instance" "satellite_ec201_private_bonus" {
-  ami                   = var.ec2_ami_id
+  ami                    = var.ec2_ami_id
   instance_type          = var.ec2_instance_type
   subnet_id              = aws_subnet.satellite_private_subnets[0].id
-  vpc_security_group_ids = [aws_security_group.satellite_ec2_sg01.id]
+  //vpc_security_group_ids = [aws_security_group.satellite_ec2_sg01.id] #This would add a security group on port 80 instead of using only the ALB
   iam_instance_profile   = aws_iam_instance_profile.satellite_instance_profile01.name
+  security_groups = [aws_security_group.satellite_alb_sg01.id]
 
   # TODO: Students should remove/disable SSH inbound rules entirely and rely on SSM.
   # TODO: Students add user_data that installs app + CW agent; for true hard mode use a baked AMI.
 
   tags = {
-    Name = "${local.satellite_prefix}-ec201-private"
+    Name = "${local.satellite_prefix}-ec201-private-bonus-labs"
   }
 }
 
@@ -54,11 +55,11 @@ resource "aws_security_group" "satellite_vpce_sg01" {
   }
 }
 resource "aws_security_group_rule" "satellite_vpce_sg_ingress_https_from_ec2" {
-  type              = "ingress"
-  from_port        = 443
-  to_port          = 443
-  protocol         = "tcp"
-  security_group_id = aws_security_group.satellite_vpce_sg01.id
+  type                     = "ingress"
+  from_port                = local.ports_https
+  to_port                  = local.ports_https
+  protocol                 = local.tcp_protocol
+  security_group_id        = aws_security_group.satellite_vpce_sg01.id
   source_security_group_id = aws_security_group.satellite_ec2_sg01.id
 }
 

@@ -13,31 +13,31 @@ variable "project_name" {
 variable "vpc_cidr" {
   description = "VPC CIDR (use 10.x.x.x/xx as instructed)."
   type        = string
-  default     = "10.20.0.0/16" # TODO: student supplies
+  default     = "10.20.0.0/16" 
 }
 
 variable "public_subnet_cidrs" {
   description = "Public subnet CIDRs (use 10.x.x.x/xx)."
   type        = list(string)
-  default     = ["10.20.1.0/24", "10.20.2.0/24"] # TODO: student supplies
+  default     = ["10.20.1.0/24", "10.20.2.0/24"]
 }
 
 variable "private_subnet_cidrs" {
   description = "Private subnet CIDRs (use 10.x.x.x/xx)."
   type        = list(string)
-  default     = ["10.20.11.0/24", "10.20.12.0/24"] # TODO: student supplies
+  default     = ["10.20.11.0/24", "10.20.12.0/24"]
 }
 
 variable "azs" {
   description = "Availability Zones list (match count with subnets)."
   type        = list(string)
-  default     = ["us-east-1a", "us-east-1b"] # TODO: student supplies
+  default     = ["us-east-1a", "us-east-1b"]
 }
 
 variable "ec2_ami_id" {
   description = "AMI ID for the EC2 app host."
   type        = string
-  default     = "ami-068c0051b15cdb816" # TODO
+  default     = "ami-068c0051b15cdb816"
 }
 
 variable "ec2_instance_type" {
@@ -61,26 +61,26 @@ variable "db_instance_class" {
 variable "db_name" {
   description = "Initial database name."
   type        = string
-  default     = "sithdb" # Students can change
+  default     = "sithdb"
 }
 
 variable "db_username" {
   description = "DB master username (students should use Secrets Manager in 1B/1C)."
   type        = string
-  default     = "admin" # TODO: student supplies
+  default     = "admin" 
 }
 
 variable "db_password" {
   description = "DB master password (DO NOT hardcode in real life; for lab only)."
   type        = string
   sensitive   = true
-  default     = "Quasar123!" # TODO: student supplies
+  default     = "Quasar123!"
 }
 
 variable "sns_email_endpoint" {
   description = "Email for SNS subscription (PagerDuty simulation)."
   type        = string
-  default     = "kryptok85@gmail.com" # TODO: student supplies
+  default     = "kevinwillocks@gmail.com" 
 }
 
 variable "my_ip_cidr" {
@@ -91,4 +91,14 @@ variable "my_ip_cidr" {
 variable "storage_type" {
   default = "gp2"
   type    = string
+}
+
+variable "hosted_zone_id" {
+  type    = string
+  default = "Z0756527XY5EXU462HMZ"
+}
+
+variable "all_ip_address" {
+  type    = string
+  default = "0.0.0.0/0"
 }

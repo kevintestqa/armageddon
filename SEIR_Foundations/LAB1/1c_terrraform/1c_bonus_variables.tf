@@ -1,13 +1,13 @@
 variable "domain_name" {
-  description = "Base domain students registered (e.g., chewbacca-growl.com)."
+  description = "Base domain students registered (e.g., pawserenity.click)."
   type        = string
-  default     = "chewbacca-growl.com"
+  default     = "pawserenity.click"
 }
 
 variable "app_subdomain" {
-  description = "App hostname prefix (e.g., app.chewbacca-growl.com)."
+  description = "App hostname prefix (e.g., www.pawserenity.click)."
   type        = string
-  default     = "app"
+  default     = "www."
 }
 
 variable "certificate_validation_method" {
