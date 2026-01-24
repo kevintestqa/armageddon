@@ -13,6 +13,8 @@ locals {
   all_ip_address = "0.0.0.0/0"
   all_ports      = "-1"
   all_protocol   = "All"
+  http           = "http"
+  https          = "https"
 }
 
 ############################################
@@ -184,17 +186,17 @@ resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
   cidr_ipv4         = local.all_ip_address
 }
 
-resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_alb" {
-  ip_protocol       = local.tcp_protocol
-  security_group_id = aws_security_group.satellite_ec2_sg01.id
-  from_port         = local.ports_http
-  to_port           = local.ports_http
-  referenced_security_group_id = aws_security_group.satellite_alb_sg01.id
+# resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_alb" {
+#   ip_protocol                  = local.tcp_protocol
+#   security_group_id            = aws_security_group.satellite_ec2_sg01.id
+#   referenced_security_group_id = aws_security_group.satellite_alb_sg01.id
+#   from_port                    = local.ports_http
+#   to_port                      = local.ports_http
 
-    tags = {
-    Name = "${local.name_prefix}-ec2-sg_ingress_alb"
-  }
-}
+#     tags = {
+#     Name = "${local.name_prefix}-ec2-sg_ingress_alb"
+#   }
+# }
 
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
@@ -353,13 +355,14 @@ resource "aws_instance" "satellite_ec2_01" {
   vpc_security_group_ids      = [aws_security_group.satellite_ec2_sg01.id]
   iam_instance_profile        = aws_iam_instance_profile.satellite_instance_profile01.name
   user_data_replace_on_change = true
+  associate_public_ip_address = true
 
   # TODO: student supplies user_data to install app + CW agent + configure log shipping
   user_data  = file("${path.module}/1a_user_data.sh")
   depends_on = [aws_db_instance.satellite_rds01]
 
   tags = {
-    Name = "${local.name_prefix}-ec2_01-public"
+    Name = "${local.name_prefix}-ec2_01-public-lab1A"
   }
 }
 resource "aws_instance" "satellite_ec_03" {

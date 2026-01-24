@@ -22,6 +22,7 @@ resource "aws_security_group" "satellite_alb_sg01" {
   }
 }
 
+# Allow public HTTP to reach the ALB (needed for HTTP:80 listener + redirect to HTTPS)
 resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_http" {
   ip_protocol       = local.tcp_protocol
   security_group_id = aws_security_group.satellite_alb_sg01.id
@@ -49,16 +50,17 @@ resource "aws_vpc_security_group_egress_rule" "satellite_alb_egress_http" {
 }
 
 # Explanation: satellite only opens the hangar door — allow ALB -> EC2 on app port (e.g., 80).
-# resource "aws_security_group_rule" "satellite_ec2_ingress_from_alb01" {
-#   type                     = "ingress"
-#   security_group_id        = aws_security_group.satellite_ec2_sg01.id
-#   from_port                = local.ports_http
-#   to_port                  = local.ports_http
-#   protocol                 = local.tcp_protocol
-#   source_security_group_id = aws_security_group.satellite_alb_sg01.id
-
-#   # TODO: students ensure EC2 app listens on this port (or change to 8080, etc.)
-# }
+# Kevin -  IDK if i need this
+resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_ingress_from_alb_http" {
+  ip_protocol                  = local.tcp_protocol
+  security_group_id            = aws_security_group.satellite_ec2_sg01.id
+  referenced_security_group_id = aws_security_group.satellite_alb_sg01.id
+  from_port                    = local.ports_http
+  to_port                      = local.ports_http
+  tags = {
+    Name = "${local.name_prefix}-ec2-sg_ingress_alb"
+  }
+}
 
 # ############################################
 # # Application Load Balancer
@@ -94,13 +96,13 @@ resource "aws_lb_target_group" "satellite_tg01" {
   # TODO: students set health check path to something real (e.g., /health)
   health_check {
     enabled             = true
-    interval            = 300 #TODO: adjust intervals to something more realistic
+    interval            = 30 #TODO: adjust intervals to something more realistic
     path                = "/"
     port                = "traffic-port"
     protocol            = "HTTP"
-    healthy_threshold   = 4
+    healthy_threshold   = 2
     unhealthy_threshold = 5
-    timeout             = 120
+    timeout             = 10
     matcher             = "200-399"
   }
 
@@ -163,10 +165,10 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 
 # Explanation: Once validated, ACM becomes the “green checkmark” — until then, ALB HTTPS won’t work.
 # Kevin - I already have pawserenity.click and it was verified
-# resource "aws_acm_certificate_validation" "satellite_acm_validation" {
-#   certificate_arn         = aws_acm_certificate.satellite_acm_cert01.arn
-#   validation_record_fqdns = [for r in aws_route53_record.satellite_acm_validation : r.fqdn]
-# }
+resource "aws_acm_certificate_validation" "satellite_acm_validation" {
+  certificate_arn         = aws_acm_certificate.satellite_acm_cert01.arn
+  # validation_record_fqdns = [for r in aws_route53_record.satellite_acm_validation : r.fqdn]
+}
 
 # ############################################
 # # ALB Listeners: HTTP -> HTTPS redirect, HTTPS -> TG
@@ -175,13 +177,13 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 # Explanation: HTTP listener is the decoy airlock — it redirects everyone to the secure entrance.
 resource "aws_lb_listener" "satellite_http_listener01" {
   load_balancer_arn = aws_lb.satellite_alb01.arn
-  port              = 80
+  port              = local.ports_http
   protocol          = "HTTP"
 
   default_action {
     type = "redirect"
     redirect {
-      port        = "443"
+      port        = tostring(local.ports_https)
       protocol    = "HTTPS"
       status_code = "HTTP_301"
     }
@@ -191,7 +193,7 @@ resource "aws_lb_listener" "satellite_http_listener01" {
 # # Explanation: HTTPS listener is the real hangar bay — TLS terminates here, then traffic goes to private targets.
 resource "aws_lb_listener" "satellite_https_listener01" {
   load_balancer_arn = aws_lb.satellite_alb01.arn
-  port              = 443
+  port              = local.ports_https
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
   certificate_arn   = aws_acm_certificate.satellite_acm_cert01.arn

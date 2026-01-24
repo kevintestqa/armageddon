@@ -61,7 +61,7 @@ variable "db_instance_class" {
 variable "db_name" {
   description = "Initial database name."
   type        = string
-  default     = "sithdb"
+  default     = "elysium"
 }
 
 variable "db_username" {
@@ -101,4 +101,16 @@ variable "hosted_zone_id" {
 variable "all_ip_address" {
   type    = string
   default = "0.0.0.0/0"
+}
+
+variable "manage_route53_in_terraform" {
+  description = "If true, create/manage Route53 hosted zone + records in Terraform."
+  type        = bool
+  default     = true
+}
+
+variable "route53_hosted_zone_id" {
+  description = "If manage_route53_in_terraform=false, provide existing Hosted Zone ID for domain."
+  type        = string
+  default     = ""
 }
