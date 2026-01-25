@@ -13,7 +13,7 @@ variable "project_name" {
 variable "vpc_cidr" {
   description = "VPC CIDR (use 10.x.x.x/xx as instructed)."
   type        = string
-  default     = "10.20.0.0/16" 
+  default     = "10.20.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
@@ -67,7 +67,7 @@ variable "db_name" {
 variable "db_username" {
   description = "DB master username (students should use Secrets Manager in 1B/1C)."
   type        = string
-  default     = "admin" 
+  default     = "admin"
 }
 
 variable "db_password" {
@@ -80,7 +80,7 @@ variable "db_password" {
 variable "sns_email_endpoint" {
   description = "Email for SNS subscription (PagerDuty simulation)."
   type        = string
-  default     = "kevinwillocks@gmail.com" 
+  default     = "kevinwillocks@gmail.com"
 }
 
 variable "my_ip_cidr" {
@@ -124,7 +124,7 @@ variable "domain_name" {
 variable "app_subdomain" {
   description = "App hostname prefix (e.g., www.pawserenity.click)."
   type        = string
-  default     = "www."
+  default     = "www"
 }
 
 variable "certificate_validation_method" {

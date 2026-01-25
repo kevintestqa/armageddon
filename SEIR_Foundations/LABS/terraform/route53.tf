@@ -4,8 +4,8 @@
 
 # # Explanation: TLS is the diplomatic passport — browsers trust you, and satellite stops growling at plaintext.
 resource "aws_acm_certificate" "satellite_acm_cert01" {
-  domain_name       = local.satellite_fqdn 
-  validation_method = var.certificate_validation_method
+  domain_name               = local.satellite_fqdn
+  validation_method         = var.certificate_validation_method
   subject_alternative_names = [var.domain_name]
 
   tags = {
@@ -44,7 +44,7 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 # Explanation: Once validated, ACM becomes the “green checkmark” — until then, ALB HTTPS won’t work.
 # Kevin - I already have pawserenity.click and it was verified
 resource "aws_acm_certificate_validation" "satellite_acm_validation" {
-  certificate_arn         = aws_acm_certificate.satellite_acm_cert01.arn
+  certificate_arn = aws_acm_certificate.satellite_acm_cert01.arn
   # validation_record_fqdns = [for r in aws_route53_record.satellite_acm_validation : r.fqdn]
 }
 
@@ -114,7 +114,7 @@ resource "aws_route53_record" "pawserenity_apex_alias" {
 
 resource "aws_route53_record" "pawserenity_www_alias" {
   zone_id = var.hosted_zone_id
-  name    = "www.${trimsuffix(data.aws_route53_zone.pawserenity.name, ".")}" 
+  name    = "www.${trimsuffix(data.aws_route53_zone.pawserenity.name, ".")}"
   type    = "A"
 
   alias {

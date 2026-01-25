@@ -403,7 +403,7 @@ resource "aws_wafv2_web_acl" "satellite_waf01" {
   count = var.enable_waf ? 1 : 0
 
   name  = "${var.project_name}-waf01"
-  scope = "REGIONAL"
+  scope = "REGIONAL" #Cloudfront - scoped ACLs cannot attach to ALB. ALBs required regional ACLs
 
   default_action {
     allow {}

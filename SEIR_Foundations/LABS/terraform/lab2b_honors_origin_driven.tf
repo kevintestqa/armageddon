@@ -27,20 +27,20 @@ data "aws_cloudfront_origin_request_policy" "chewbacca_orp_all_viewer_except_hos
 ############################################
 
 # Explanation: Public feed is cacheable—but only if the origin explicitly says so. Chewbacca demands consent.
-ordered_cache_behavior {
-  path_pattern           = "/api/public-feed"
-  target_origin_id       = "${var.project_name}-alb-origin01"
-  viewer_protocol_policy = "redirect-to-https"
+# ordered_cache_behavior {
+#   path_pattern           = "/api/public-feed"
+#   target_origin_id       = "${var.project_name}-alb-origin01"
+#   viewer_protocol_policy = "redirect-to-https"
 
-  allowed_methods = ["GET", "HEAD", "OPTIONS"]
-  cached_methods  = ["GET", "HEAD"]
+#   allowed_methods = ["GET", "HEAD", "OPTIONS"]
+#   cached_methods  = ["GET", "HEAD"]
 
-  # Honor Cache-Control from origin (and default to not caching without it). :contentReference[oaicite:8]{index=8}
-  cache_policy_id = data.aws_cloudfront_cache_policy.chewbacca_use_origin_cache_headers01.id
+#   # Honor Cache-Control from origin (and default to not caching without it). :contentReference[oaicite:8]{index=8}
+#   cache_policy_id = data.aws_cloudfront_cache_policy.chewbacca_use_origin_cache_headers01.id
 
-  # Forward what origin needs. Keep it tight: don't forward everything unless required. :contentReference[oaicite:9]{index=9}
-  origin_request_policy_id = data.aws_cloudfront_origin_request_policy.chewbacca_orp_all_viewer_except_host01.id
-}
+#   # Forward what origin needs. Keep it tight: don't forward everything unless required. :contentReference[oaicite:9]{index=9}
+#   origin_request_policy_id = data.aws_cloudfront_origin_request_policy.chewbacca_orp_all_viewer_except_host01.id
+# }
 
 
 
@@ -49,17 +49,17 @@ ordered_cache_behavior {
 ############################################
 
 # Explanation: Everything else under /api is dangerous by default—Chewbacca disables caching until proven safe.
-ordered_cache_behavior {
-  path_pattern           = "/api/*"
-  target_origin_id       = "${var.project_name}-alb-origin01"
-  viewer_protocol_policy = "redirect-to-https"
+# ordered_cache_behavior {
+#   path_pattern           = "/api/*"
+#   target_origin_id       = "${var.project_name}-alb-origin01"
+#   viewer_protocol_policy = "redirect-to-https"
 
-  allowed_methods = ["GET","HEAD","OPTIONS","PUT","POST","PATCH","DELETE"]
-  cached_methods  = ["GET","HEAD"]
+#   allowed_methods = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+#   cached_methods  = ["GET", "HEAD"]
 
-  cache_policy_id          = aws_cloudfront_cache_policy.chewbacca_cache_api_disabled01.id
-  origin_request_policy_id = aws_cloudfront_origin_request_policy.chewbacca_orp_api01.id
-}
+#   cache_policy_id          = aws_cloudfront_cache_policy.chewbacca_cache_api_disabled01.id
+#   origin_request_policy_id = aws_cloudfront_origin_request_policy.chewbacca_orp_api01.id
+# }
 
 
 

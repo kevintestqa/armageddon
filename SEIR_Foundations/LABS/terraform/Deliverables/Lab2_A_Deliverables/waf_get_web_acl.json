@@ -1,0 +1,44 @@
+{
+    "WebACL": {
+        "Name": "satellite-cf-waf01",
+        "Id": "43f6f74d-993f-4c29-a5af-1c82a1668937",
+        "ARN": "arn:aws:wafv2:us-east-1:461593447802:global/webacl/satellite-cf-waf01/43f6f74d-993f-4c29-a5af-1c82a1668937",
+        "DefaultAction": {
+            "Allow": {}
+        },
+        "Description": "",
+        "Rules": [
+            {
+                "Name": "AWSManagedRulesCommonRuleSet",
+                "Priority": 1,
+                "Statement": {
+                    "ManagedRuleGroupStatement": {
+                        "VendorName": "AWS",
+                        "Name": "AWSManagedRulesCommonRuleSet"
+                    }
+                },
+                "OverrideAction": {
+                    "None": {}
+                },
+                "VisibilityConfig": {
+                    "SampledRequestsEnabled": true,
+                    "CloudWatchMetricsEnabled": true,
+                    "MetricName": "satellite-cf-waf-common"
+                }
+            }
+        ],
+        "VisibilityConfig": {
+            "SampledRequestsEnabled": true,
+            "CloudWatchMetricsEnabled": true,
+            "MetricName": "satellite-cf-waf01"
+        },
+        "Capacity": 700,
+        "ManagedByFirewallManager": false,
+        "LabelNamespace": "awswaf:461593447802:webacl:satellite-cf-waf01:",
+        "RetrofittedByFirewallManager": false,
+        "OnSourceDDoSProtectionConfig": {
+            "ALBLowReputationMode": "ACTIVE_UNDER_DDOS"
+        }
+    },
+    "LockToken": "df4c4d5c-69d0-40db-8cce-4926c59e793d"
+}
