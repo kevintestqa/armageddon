@@ -26,3 +26,85 @@ output "satellite_sns_topic_arn" {
 output "satellite_log_group_name" {
   value = aws_cloudwatch_log_group.satellite_log_group01.name
 }
+
+output "satellite_route53_zone_id" {
+  value = var.hosted_zone_id
+}
+
+output "satellite_app_url_https" {
+  value = "https://${var.app_subdomain}.${var.domain_name}"
+}
+
+output "satellite_pawserenity_cert_arn" {
+  value = aws_acm_certificate.satellite_acm_cert01
+  sensitive = true
+}
+
+output "satellite_pawserenity_cert_arn_region" {
+  value = aws_acm_certificate.satellite_acm_cert01.region
+  sensitive = false
+}
+
+output "pawserenity_apex_alias_record" {
+  value = aws_route53_record.pawserenity_apex_alias.records
+}
+
+output "pawserenity_www_alias_record" {
+  value = aws_route53_record.pawserenity_www_alias.records
+}
+
+output "pawserenity_apex_alias" {
+  value = aws_route53_record.pawserenity_apex_alias.alias
+}
+
+output "pawserenity_www_alia_ttl" {
+  value = aws_route53_record.pawserenity_www_alias.ttl
+}
+
+#Bonus-A outputs (append to outputs.tf)
+
+# Explanation: These outputs prove Chewbacca built private hyperspace lanes (endpoints) instead of public chaos.
+output "satellite_vpce_ssm_id" {
+  value = aws_vpc_endpoint.satellite_vpce_ssm01.id
+}
+
+output "satellite_vpce_logs_id" {
+  value = aws_vpc_endpoint.satellite_vpce_logs01.id
+}
+
+output "satellite_vpce_secrets_id" {
+  value = aws_vpc_endpoint.satellite_vpce_secrets01.id
+}
+
+output "satellite_vpce_s3_id" {
+  value = aws_vpc_endpoint.satellite_vpce_s3_gw01.id
+}
+
+output "satellite_private_ec2_instance_id_bonus" {
+  value = aws_instance.satellite_ec201_private_bonus_A.id
+}
+
+# # Explanation: Outputs are the mission coordinates — where to point your browser and your blasters.
+output "satellite_alb_dns_name" {
+  value = aws_lb.satellite_alb01.dns_name
+}
+
+output "satellite_app_fqdn" {
+  value = "${var.app_subdomain}.${var.domain_name}"
+}
+
+output "satellite_target_group_arn" {
+  value = aws_lb_target_group.satellite_tg01.arn
+}
+
+output "satellite_acm_cert_arn" {
+  value = aws_acm_certificate.satellite_acm_cert01.arn
+}
+
+output "satellite_waf_arn" {
+  value = var.enable_waf ? aws_wafv2_web_acl.satellite_waf01[0].arn : null
+}
+
+output "satellite_dashboard_name" {
+  value = aws_cloudwatch_dashboard.satellite_dashboard01.dashboard_name
+}

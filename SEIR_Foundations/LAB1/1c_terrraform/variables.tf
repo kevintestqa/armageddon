@@ -61,7 +61,7 @@ variable "db_instance_class" {
 variable "db_name" {
   description = "Initial database name."
   type        = string
-  default     = "sithdb"
+  default     = "elysium"
 }
 
 variable "db_username" {
@@ -101,4 +101,58 @@ variable "hosted_zone_id" {
 variable "all_ip_address" {
   type    = string
   default = "0.0.0.0/0"
+}
+
+variable "manage_route53_in_terraform" {
+  description = "If true, create/manage Route53 hosted zone + records in Terraform."
+  type        = bool
+  default     = true
+}
+
+variable "route53_hosted_zone_id" {
+  description = "If manage_route53_in_terraform=false, provide existing Hosted Zone ID for domain."
+  type        = string
+  default     = ""
+}
+
+variable "domain_name" {
+  description = "Base domain students registered (e.g., pawserenity.click)."
+  type        = string
+  default     = "pawserenity.click"
+}
+
+variable "app_subdomain" {
+  description = "App hostname prefix (e.g., www.pawserenity.click)."
+  type        = string
+  default     = "www."
+}
+
+variable "certificate_validation_method" {
+  description = "ACM validation method. Students can do DNS (Route53) or EMAIL."
+  type        = string
+  default     = "DNS"
+}
+
+variable "enable_waf" {
+  description = "Toggle WAF creation."
+  type        = bool
+  default     = true
+}
+
+variable "alb_5xx_threshold" {
+  description = "Alarm threshold for ALB 5xx count."
+  type        = number
+  default     = 10
+}
+
+variable "alb_5xx_period_seconds" {
+  description = "CloudWatch alarm period."
+  type        = number
+  default     = 300
+}
+
+variable "alb_5xx_evaluation_periods" {
+  description = "Evaluation periods for alarm."
+  type        = number
+  default     = 1
 }
