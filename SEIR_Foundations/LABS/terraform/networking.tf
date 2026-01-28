@@ -384,14 +384,14 @@ resource "aws_lb_listener" "satellite_https_listener01" {
   port              = local.ports_https
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = aws_acm_certificate.satellite_acm_cert01.arn
+  certificate_arn   = aws_acm_certificate.pawserenity_acm_cert01.arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.satellite_tg01.arn
   }
 
-  depends_on = [aws_acm_certificate.satellite_acm_cert01]
+  depends_on = [aws_acm_certificate.pawserenity_acm_cert01]
 }
 
 # 1C_Bonus_B #################################
@@ -403,7 +403,7 @@ resource "aws_wafv2_web_acl" "satellite_waf01" {
   count = var.enable_waf ? 1 : 0
 
   name  = "${var.project_name}-waf01"
-  scope = "REGIONAL"
+  scope = "REGIONAL" #Cloudfront - scoped ACLs cannot attach to ALB. ALBs required regional ACLs
 
   default_action {
     allow {}

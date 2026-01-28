@@ -25,7 +25,7 @@ resource "aws_iam_role_policy_attachment" "satellite_ec2_ssm_attach" {
 # Explanation: EC2 must read secrets/params during recovery—give it access (students should scope it down).
 resource "aws_iam_role_policy_attachment" "satellite_ec2_secrets_attach" {
   role       = aws_iam_role.satellite_ec2_role01.name
-  policy_arn = "arn:aws:iam::aws:policy/SecretsManagerReadWrite" # TODO: student replaces w/ least privilege
+  policy_arn = aws_iam_policy.satellite_secrets_policy.arn
 }
 
 # Explanation: CloudWatch logs are the “ship’s black box”—you need them when things explode.

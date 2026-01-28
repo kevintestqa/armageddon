@@ -91,19 +91,19 @@ resource "aws_cloudwatch_dashboard" "satellite_dashboard01" {
         }
       },
       {
-        type  = "metric"
-        x     = 12
-        y     = 0
-        width = 12
+        type   = "metric"
+        x      = 12
+        y      = 0
+        width  = 12
         height = 6
         properties = {
           metrics = [
-            [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", aws_lb.satellite_alb01.arn_suffix ]
+            ["AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", aws_lb.satellite_alb01.arn_suffix]
           ]
           period = 300
           stat   = "Sum"
           region = var.aws_region
-          title = "Satekkue ELB: Response time"
+          title  = "Satekkue ELB: Response time"
         }
       }
     ]
