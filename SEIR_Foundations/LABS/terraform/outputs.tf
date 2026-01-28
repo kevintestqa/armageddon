@@ -36,12 +36,12 @@ output "satellite_app_url_https" {
 }
 
 output "satellite_pawserenity_cert_arn" {
-  value     = aws_acm_certificate.satellite_acm_cert01
+  value     = aws_acm_certificate.pawserenity_acm_cert01
   sensitive = true
 }
 
 output "satellite_pawserenity_cert_arn_region" {
-  value     = aws_acm_certificate.satellite_acm_cert01.region
+  value     = aws_acm_certificate.pawserenity_acm_cert01.region
   sensitive = false
 }
 
@@ -98,7 +98,7 @@ output "satellite_target_group_arn" {
 }
 
 output "satellite_acm_cert_arn" {
-  value = aws_acm_certificate.satellite_acm_cert01.arn
+  value = aws_acm_certificate.pawserenity_acm_cert01.arn
 }
 
 output "satellite_waf_arn" {

@@ -3,7 +3,7 @@
 # ############################################
 
 # # Explanation: TLS is the diplomatic passport — browsers trust you, and satellite stops growling at plaintext.
-resource "aws_acm_certificate" "satellite_acm_cert01" {
+resource "aws_acm_certificate" "pawserenity_acm_cert01" {
   domain_name               = local.satellite_fqdn
   validation_method         = var.certificate_validation_method
   subject_alternative_names = [var.domain_name]
@@ -15,7 +15,7 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 
 # # Explanation: DNS validation records are the “prove you own the planet” ritual — Route53 makes this elegant.
 # # TODO: students implement aws_route53_record(s) if they manage DNS in Route53.
-#  resource "aws_route53_record" "satellite_acm_validation" { 
+#  resource "aws_route53_record" "pawserenity_acm_validation" { 
 #     zone_id = var.hosted_zone_id
 #     name = var.domain_name
 #     type = "SOA"
@@ -24,9 +24,9 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 #  }
 
 # maybe use for multiple records
-# resource "aws_route53_record" "satellite_acm_validation" {
+# resource "aws_route53_record" "pawserenity_acm_validation" {
 #   for_each = {
-#     for domain_validation_option in aws_acm_certificate.satellite_acm_cert01.domain_validation_options : domain_validation_option.domain_name => {
+#     for domain_validation_option in aws_acm_certificate.pawserenity_acm_cert01.domain_validation_options : domain_validation_option.domain_name => {
 #       name   = domain_validation_option.resource_record_name
 #       record = domain_validation_option.resource_record_value
 #       type   = domain_validation_option.resource_record_type
@@ -43,9 +43,9 @@ resource "aws_acm_certificate" "satellite_acm_cert01" {
 
 # Explanation: Once validated, ACM becomes the “green checkmark” — until then, ALB HTTPS won’t work.
 # Kevin - I already have pawserenity.click and it was verified
-resource "aws_acm_certificate_validation" "satellite_acm_validation" {
-  certificate_arn = aws_acm_certificate.satellite_acm_cert01.arn
-  # validation_record_fqdns = [for r in aws_route53_record.satellite_acm_validation : r.fqdn]
+resource "aws_acm_certificate_validation" "pawserenity_acm_validation" {
+  certificate_arn = aws_acm_certificate.pawserenity_acm_cert01.arn
+  # validation_record_fqdns = [for r in aws_route53_record.pawserenity_acm_validation : r.fqdn]
 }
 
 ############################################
