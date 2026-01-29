@@ -13,6 +13,7 @@ resource "aws_s3_bucket_ownership_controls" "satellite_alb_logs_bucket01_ownersh
   }
 }
 
+#access control for s3 bucket
 resource "aws_s3_bucket_acl" "satellite_alb_logs_bucket01_acl" {
   bucket = aws_s3_bucket.satellite_alb_logs_bucket01.id
   acl    = "private"
@@ -28,6 +29,7 @@ resource "aws_s3_bucket_policy" "satellite_alb_logs_bucket01_access" {
 
 data "aws_caller_identity" "current" {}
 
+#bucket policy details
 data "aws_iam_policy_document" "satellite_s3_access_from_alb" {
   statement {
     sid     = "AllowALBLogDelivery"
