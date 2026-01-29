@@ -108,3 +108,21 @@ output "satellite_waf_arn" {
 output "satellite_dashboard_name" {
   value = aws_cloudwatch_dashboard.satellite_dashboard01.dashboard_name
 }
+
+# Explanation: The apex URL is the front gate—humans type this when they forget subdomains.
+output "pawserenity_apex_url_https" {
+  value = "https://${var.domain_name}"
+}
+
+# Explanation: Log bucket name is where the footprints live—useful when hunting 5xx or WAF blocks.
+output "satellite_alb_logs_bucket_name" {
+  value = var.enable_alb_access_logs ? aws_s3_bucket.satellite_alb_logs_bucket01.bucket : null
+}
+
+output "satellite_s3_ownership_control" {
+  value = aws_s3_bucket_ownership_controls.satellite_alb_logs_bucket01_ownership.rule
+}
+
+output "satellite_s3_acl" {
+  value = aws_s3_bucket_acl.satellite_alb_logs_bucket01_acl.acl
+}

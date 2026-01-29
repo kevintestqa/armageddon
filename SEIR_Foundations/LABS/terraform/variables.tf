@@ -156,3 +156,20 @@ variable "alb_5xx_evaluation_periods" {
   type        = number
   default     = 1
 }
+variable "enable_alb_access_logs" {
+  description = "Enable ALB access logging to S3."
+  type        = bool
+  default     = true
+}
+
+variable "alb_access_logs_prefix" {
+  description = "S3 prefix for ALB access logs."
+  type        = string
+  default     = "alb-access-logs"
+}
+
+variable "satellite_s3_bucket_name" {
+  description = "S3 Bucket name for ALB logs"
+  default = "satellite-alb-logs-bucket01"
+  type = string
+}
