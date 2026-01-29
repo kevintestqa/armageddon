@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "satellite_alb_logs_bucket01" {
     bucket = var.satellite_s3_bucket_name
+    force_destroy = true
     tags = {
       "Name" = "alb_logs"
     }
