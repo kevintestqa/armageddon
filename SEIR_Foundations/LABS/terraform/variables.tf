@@ -170,14 +170,14 @@ variable "alb_access_logs_prefix" {
 
 variable "satellite_s3_bucket_name" {
   description = "S3 Bucket name for ALB logs"
-  default = "satellite-alb-logs-bucket01"
-  type = string
+  default     = "satellite-alb-logs-bucket01"
+  type        = string
 }
 
 variable "waf_log_destination" {
   description = "Choose ONE destination per WebACL: cloudwatch | s3 | firehose"
   type        = string
-  default     = "cloudwatch"
+  default     = "firehose"
 }
 
 variable "waf_log_retention_days" {
