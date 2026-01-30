@@ -170,6 +170,24 @@ variable "alb_access_logs_prefix" {
 
 variable "satellite_s3_bucket_name" {
   description = "S3 Bucket name for ALB logs"
-  default = "satellite-alb-logs-bucket01"
-  type = string
+  default     = "satellite-alb-logs-bucket01"
+  type        = string
+}
+
+variable "waf_log_destination" {
+  description = "Choose ONE destination per WebACL: cloudwatch | s3 | firehose"
+  type        = string
+  default     = "firehose"
+}
+
+variable "waf_log_retention_days" {
+  description = "Retention for WAF CloudWatch log group."
+  type        = number
+  default     = 14
+}
+
+variable "enable_waf_sampled_requests_only" {
+  description = "If true, students can optionally filter/redact fields later. (Placeholder toggle.)"
+  type        = bool
+  default     = false
 }
