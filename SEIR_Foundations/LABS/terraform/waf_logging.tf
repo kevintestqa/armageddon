@@ -41,7 +41,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "satellite_waf_logging01" {
 
 # Explanation: S3 WAF logs are the long-term archive—satellite likes receipts that survive dashboards.
 resource "aws_s3_bucket" "satellite_waf_logs_bucket01" {
-  count = var.waf_log_destination == "s3" ? 1 : 0
+  count         = var.waf_log_destination == "s3" ? 1 : 0
   force_destroy = true
 
   bucket = "aws-waf-logs-${var.project_name}-${data.aws_caller_identity.satellite_self01.account_id}"
@@ -80,7 +80,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "satellite_waf_logging_s3_01"
 
 # Explanation: Firehose is the conveyor belt—WAF logs ride it to storage (and can fork to SIEM later).
 resource "aws_s3_bucket" "satellite_firehose_waf_dest_bucket01" {
-  count = var.waf_log_destination == "firehose" ? 1 : 0
+  count         = var.waf_log_destination == "firehose" ? 1 : 0
   force_destroy = true
 
   bucket = "${var.project_name}-waf-firehose-dest-${data.aws_caller_identity.satellite_self01.account_id}"

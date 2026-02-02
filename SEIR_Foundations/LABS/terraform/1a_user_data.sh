@@ -10,7 +10,9 @@ import os
 import boto3
 import pymysql
 import traceback
-from flask import Flask, request
+from datetime import datetime
+import random
+from flask import Flask, request, make_response, jsonify
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 SECRET_ID = os.environ.get("SECRET_ID", "lab1a/rds/mysql")
@@ -43,6 +45,32 @@ def home():
     <p>POST /add?note=hello</p>
     <p>GET /list</p>
     """
+
+
+# ----- New API Routes -----
+
+@app.route("/api/public-feed")
+def public_feed():
+    # Changes every request at origin, but CloudFront can hold it for 30s when honoring Cache-Control.
+    now = datetime.utcnow().isoformat() + "Z"
+    msg = random.choice(["alpha", "bravo", "charlie", "delta"])
+    resp = make_response(jsonify({
+        "server_time_utc": now,
+        "message_of_the_minute": msg
+    }))
+    resp.headers["Cache-Control"] = "public, s-maxage=30, max-age=0"
+    return resp
+
+
+@app.route("/api/list")
+def api_list():
+    # Never cache: prevents user mixups and stale reads.
+    resp = make_response(jsonify({
+        "generated_utc": datetime.utcnow().isoformat() + "Z",
+        "items": [1, 2, 3]
+    }))
+    resp.headers["Cache-Control"] = "private, no-store"
+    return resp
 
 @app.route("/init")
 def init_db():
