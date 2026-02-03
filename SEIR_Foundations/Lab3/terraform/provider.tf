@@ -1,10 +1,10 @@
 # Tokyo provider (default)
 provider "aws" {
-  region = "ap-northeast-1"
+  region = var.shinjuku_az
 }
 
 # Sao Paulo provider
 provider "aws" {
   alias  = "saopaulo"
-  region = "sa-east-1"
+  region = var.liberdade_az
 }

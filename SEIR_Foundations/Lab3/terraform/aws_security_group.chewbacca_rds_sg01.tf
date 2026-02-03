@@ -6,5 +6,5 @@ resource "aws_security_group_rule" "shinjuku_rds_ingress_from_liberdade01" {
   to_port           = 3306
   protocol          = "tcp"
 
-  cidr_blocks = ["10.x.x.x/xx"] # Sao Paulo VPC CIDR (students supply)
+  cidr_blocks = var.liberdade_public_cidrs # Sao Paulo VPC CIDR (students supply)
 }
