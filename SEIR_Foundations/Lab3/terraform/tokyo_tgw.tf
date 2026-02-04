@@ -7,8 +7,8 @@ resource "aws_ec2_transit_gateway" "shinjuku_tgw01" {
 # Explanation: Shinjuku connects to the Tokyo VPC—this is the gate to the medical records vault.
 resource "aws_ec2_transit_gateway_vpc_attachment" "shinjuku_attach_tokyo_vpc01" {
   transit_gateway_id = aws_ec2_transit_gateway.shinjuku_tgw01.id
-  vpc_id             = aws_vpc.chewbacca_vpc01.id
-  subnet_ids         = [aws_subnet.chewbacca_private_subnet01.id, aws_subnet.chewbacca_private_subnet02.id]
+  vpc_id             = aws_vpc.shinjuku_vpc01.id
+  subnet_ids         = [aws_subnet.shinjuku_private_subnets.id]
   tags = { Name = "shinjuku-attach-tokyo-vpc01" }
 }
 

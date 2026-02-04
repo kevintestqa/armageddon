@@ -65,8 +65,6 @@ resource "aws_subnet" "satellite_private_subnets" {
   cidr_block        = var.private_subnet_cidrs[count.index]
   availability_zone = var.azs[count.index]
 
-
-
   tags = {
     Name = "${local.name_prefix}-private-subnet0${count.index + 1}"
   }

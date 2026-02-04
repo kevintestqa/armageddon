@@ -1,7 +1,6 @@
 locals {
   liberdade = "liberdade"
   shinjuku = "shinjuku"
-
 }
 
 resource "aws_subnet" "liberdade_public_subnets" {
