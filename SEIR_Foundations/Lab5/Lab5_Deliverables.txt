@@ -1,0 +1,81 @@
+Red Team Deliverables (What They Submit)
+Deliverable 1 — “Red Packet” (Evidence Bundle)
+
+Folder structure (required):
+
+red-packet/
+  00_rules_of_engagement.md
+  01_target_map.md
+  02_activity_log.csv
+  03_findings/
+     F001_*.md
+     F002_*.md
+     ...
+  04_artifacts/
+     recon/
+     web/
+     vuln/
+     iac/
+     cloud/
+     ai/
+
+Deliverable 2 — Findings (Minimum 8)
+
+Each finding must use this format:
+
+Finding ID: F00X
+Category: OWASP A0X
+Severity: High/Med/Low
+What we observed: (facts only)
+Evidence: (file paths, command outputs)
+Impact: (what could happen)
+Root cause: (why it exists)
+Fix recommendation: (specific, minimal)
+Verification step: (how Blue Team can confirm fix)
+
+Deliverable 3 — “Blue Team Handoff”
+A one-page brief:
+    Top 3 risks to fix first
+    One “fast remediation”
+    One “requires design change”
+    One “monitoring gap”
+
+Constraints That Make This Professional 
+1) No “spray and pray”
+You are graded on clarity, not noise.
+
+2) No hero mode
+If you can’t prove it with evidence, it doesn’t count.
+
+3) No illegal or unsafe fixes
+Red Team must never recommend:
+    storing PHI outside Japan
+    turning off logging
+    exposing DB publicly “for testing”
+    bypassing identity controls
+
+4) Respect production discipline
+Even in a lab, act like it’s real:
+    small changes
+    clear notes
+    reproducible steps
+
+
+Why This Matters to Your Career
+
+Most engineers can “run a scanner.”
+Very few can produce:
+    a clean evidence packet
+    a prioritized risk narrative
+    a remediation plan that doesn’t break compliance
+    a handoff Blue Team can execute
+
+That skill set is what separates:
+
+“I ran tools”
+from
+“I reduced risk in a defensible way.”
+
+
+
+

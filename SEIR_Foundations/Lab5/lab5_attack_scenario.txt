@@ -1,0 +1,41 @@
+Attack Scenarios (Mapped to OWASP Top 10)
+Red Team must complete at least 6 scenarios, covering at least 5 distinct OWASP categories.
+Below are safe scenario designs (no weaponized payloads). Each scenario requires: evidence + impact + fix.
+
+Scenario 1 — Broken Access Control (A01)
+    Try to access endpoints/actions you should not be able to
+    Attempt role confusion (e.g., “staff” doing “admin” actions)
+    Evidence: HTTP status, auth context, logs showing decision point
+
+Scenario 2 — Security Misconfiguration (A05)
+    Identify misconfigured headers, open ports, permissive firewall rules
+    Evidence: scanner output + exact config path
+
+Scenario 3 — Vulnerable/Outdated Components (A06)
+    Show at least one outdated package/component with known CVEs
+    Evidence: SBOM + vulnerability scan output
+    Fix: patch plan + verification method
+
+Scenario 4 — Identification & Authentication Failures (A07)
+    Evaluate session handling, token lifetime, insecure defaults
+    Evidence: auth flow mapping, token policy evidence (no secrets)
+
+Scenario 5 — Software & Data Integrity Failures (A08)
+    Prove whether builds/deployments are tamper-resistant
+    If using GitOps, check if branch protections and artifact integrity exist
+    Evidence: pipeline config review, signature policy or absence
+
+Scenario 6 — Security Logging & Monitoring Failures (A09)
+    Identify what should be logged but isn’t (auth failures, DB conn failures, VPN down)
+    Evidence: “expected event” vs “observed logs”
+    Fix: logging+alerts plan (ties into Labs 1B–4)
+
+Scenario 7 — SSRF (A10) (only if you have a controlled endpoint)
+    Demonstrate whether server-side calls can be abused to reach internal resources
+    Evidence: architecture and allow-list checks, not exploit strings
+
+Scenario 8 — Insecure Design (A04)
+    Document one design decision that makes incidents harder (e.g., missing runbook, ambiguous ownership, no kill-switch)
+    Evidence: written design critique + proposed control
+
+

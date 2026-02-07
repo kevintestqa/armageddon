@@ -1,0 +1,110 @@
+Lab 5A-Plus (Local Llama Report Merger): objectives, inputs/outputs, student deliverables,
+and a working reference implementation in Python which:
+
+    ingests multiple tool outputs (ZAP, Trivy, Checkov, tfsec, Prowler, etc.)
+    extracts severity as stated by the tools
+    does not invent risk ratings
+    uses a local Llama server for summarization + grouping
+    produces one consolidated Markdown report for a human analyst
+
+
+Lab 5A-Bonus — Local Llama “Report Merger”
+Consolidate Open-Source Security Tool Output into One Analyst Report
+Why This Lab Exists (Workforce relevance)
+
+In real security teams, engineers often run:
+    multiple scanners (IaC, deps, web, cloud posture)
+    and end up with scattered JSON/text/HTML reports
+
+The professional problem is not “run more tools.”
+It’s turning tool noise into a usable analyst packet.
+
+This lab trains you to:
+    standardize outputs
+    preserve tool-provided severities
+    avoid hallucinated “risk scores”
+    produce a clean report that a human can act on
+
+Scope and Ethics Rules
+
+✅ Allowed:
+    Use only reports generated from authorized lab testing
+    Run Llama locally (no data sent to external APIs)
+    Summarize / merge tool results
+
+❌ Forbidden:
+    Upload reports to public AI services
+    Have the model invent severity, CVEs, or exploit steps
+    Include secrets (PSKs, passwords, API keys) in the final output
+
+Inputs (What students must provide)
+
+Students must create a folder like:
+
+inputs/
+  zap_report.json           (or zap_report.md)
+  trivy.json
+  grype.json
+  checkov.json
+  tfsec.json
+  prowler.json
+  notes_activity_log.csv
+
+You can include fewer tools if needed, but must include at least:
+
+one web report (ZAP or similar)
+one IaC report (Checkov or tfsec)
+one vuln report (Trivy or Grype)
+
+Output (What the program must produce)
+A single Markdown file:
+
+outputs/
+  consolidated_security_report.md
+  extracted_findings.json
+
+Required report sections
+
+    Executive Summary (no new severities)
+    Findings by Source Tool
+    Findings by Severity (as-reported)
+    Findings by Category (OWASP / IaC / Cloud / Dependencies)
+    Deduplication Notes (suspected duplicates only)
+    Analyst Next Actions checklist
+    Appendix: Evidence map (file names, counts)
+
+
+Required Constraints (anti-hallucination)
+
+The LLM must follow these rules:
+    It may rewrite and group findings
+    It must quote or carry over the severity from tool output
+    If severity is missing → label as UNSPECIFIED
+    It must never generate “overall risk score”
+    It must never fabricate CVEs or resources
+
+Local Llama Setup (student-friendly)
+Two common paths:
+
+Option A: Ollama (simple)
+    Install Ollama
+    Pull a Llama model
+    Run local inference server
+
+(Students can do this quickly on macOS/Linux/Windows.)
+
+Option B: llama.cpp server
+    Compile llama.cpp
+    Run llama-server
+    Use HTTP endpoint locally
+
+Either is fine. This lab assumes an HTTP endpoint like:
+
+http://localhost:11434/api/generate (Ollama)
+or
+http://localhost:8080/completion (llama.cpp)
+
+Reference Implementation (Python)
+This is intentionally “boring and readable” so students can extend it.
+
+merge_reports.py
