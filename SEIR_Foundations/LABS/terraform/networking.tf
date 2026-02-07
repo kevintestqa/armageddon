@@ -394,14 +394,15 @@ resource "aws_lb_listener" "satellite_https_listener01" {
   port              = local.ports_https
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
-  certificate_arn   = aws_acm_certificate.pawserenity_acm_cert01.arn
+  //certificate_arn   = aws_acm_certificate.pawserenity_acm_cert01.arn
+  certificate_arn = aws_acm_certificate_validation.alb_origin_cert_validation.certificate_arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.satellite_tg01.arn
   }
 
-  depends_on = [aws_acm_certificate.pawserenity_acm_cert01]
+  //depends_on = [aws_acm_certificate.pawserenity_acm_cert01]
 }
 
 # 1C_Bonus_B #################################

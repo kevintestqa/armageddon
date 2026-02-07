@@ -1,7 +1,7 @@
 #!/bin/bash
 dnf update -y
 dnf install -y python3-pip
-pip3 install flask pymysql boto3
+pip3 install flask pymysql boto3 requests
 
 mkdir -p /opt/rdsapp
 cat >/opt/rdsapp/app.py <<'PY'
@@ -13,6 +13,8 @@ import traceback
 from datetime import datetime
 import random
 from flask import Flask, request, make_response, jsonify
+from flask import Response
+import hashlib
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 SECRET_ID = os.environ.get("SECRET_ID", "lab1a/rds/mysql")
@@ -45,6 +47,33 @@ def home():
     <p>POST /add?note=hello</p>
     <p>GET /list</p>
     """
+
+
+# ---- Static Entrypoint ----
+
+@app.route("/static/index.html")
+def static_index():
+    # A simple HTML entrypoint that we can invalidate as “break glass”.
+    # Change DEPLOY_VERSION to simulate a new deployment.
+    deploy = os.environ.get("DEPLOY_VERSION", "v1")
+    body = f"""<!doctype html>
+<html>
+  <head>
+    <meta charset=\"utf-8\" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: {deploy}</p>
+  </body>
+</html>"""
+
+    resp = Response(body, mimetype="text/html")
+    # Make it cacheable at CloudFront so Age / x-cache behavior is visible.
+    resp.headers["Cache-Control"] = "public, s-maxage=300, max-age=0"
+    # Helpful for proving content changes without dumping the body.
+    resp.headers["ETag"] = hashlib.md5(body.encode("utf-8")).hexdigest()
+    return resp
 
 
 # ----- New API Routes -----
@@ -145,6 +174,7 @@ After=network.target
 [Service]
 WorkingDirectory=/opt/rdsapp
 Environment=SECRET_ID=lab1a/rds/mysql
+Environment=DEPLOY_VERSION=v1
 ExecStart=/usr/bin/python3 /opt/rdsapp/app.py
 Restart=always
 
