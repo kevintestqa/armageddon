@@ -1,0 +1,19 @@
+Tokyo only
+
+    python3 merge_reports.py --mode tokyo --llm ollama --model llama3.1
+
+NY only
+
+    python3 merge_reports.py --mode ny --llm ollama --model llama3.1
+
+Both
+
+    python3 merge_reports.py --mode both --llm ollama --model llama3.1
+
+
+Outputs:
+
+    outputs/tokyo/consolidated_security_report.md
+    outputs/ny/consolidated_security_report.md
+
+  

@@ -1,0 +1,64 @@
+# Lab 5A-Policy Engine
+# Chewbacca naming not required here, but Malgus demands discipline.
+
+version: 1
+mode_rules:
+  tokyo:
+    allowed_tools: ["ZAP", "Trivy", "Grype", "Checkov", "tfsec", "Prowler", "AWS_Evidence", "Generic"]
+  ny:
+    allowed_tools: ["ZAP", "Trivy", "Grype", "Checkov", "tfsec", "GCP_Evidence", "Generic"]
+
+limits:
+  max_total_findings: 2000
+  max_findings_per_tool:
+    ZAP: 500
+    Trivy: 800
+    Grype: 800
+    Checkov: 600
+    tfsec: 600
+    Prowler: 800
+    AWS_Evidence: 200
+    GCP_Evidence: 200
+    Generic: 300
+
+severity_overrides:
+  # Only use this if a tool exports weird severity values.
+  # The merger still preserves tool severity; overrides just normalize to the allowed set.
+  mappings:
+    "informational": "INFO"
+    "information": "INFO"
+    "moderate": "MEDIUM"
+    "severe": "HIGH"
+    "crit": "CRITICAL"
+
+hard_fail:
+  # If any of these patterns appear anywhere in extracted findings or generated report,
+  # the run FAILS. This simulates enterprise guardrails.
+  patterns:
+    - name: "AWS Access Key"
+      regex: "\\bAKIA[0-9A-Z]{16}\\b"
+    - name: "Private Key Block"
+      regex: "-----BEGIN [A-Z ]*PRIVATE KEY-----"
+    - name: "SSN Pattern"
+      regex: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+    - name: "PHI Keywords"
+      regex: "(?i)\\b(medical record|mrn|diagnosis|patient name|date of birth|dob)\\b"
+
+denylist:
+  # If these appear, warn or fail depending on severity
+  # (example: evidence indicating PHI storage outside Japan)
+  phrases:
+    - "rds in us-central"
+    - "snapshot copied to us"
+    - "patient data cached"
+  action: "warn"   # warn | fail
+
+reporting:
+  require_sections:
+    - "Executive Summary"
+    - "Findings by Source Tool"
+    - "Findings by Severity"
+    - "Findings by Category"
+    - "Suspected Duplicates"
+    - "Analyst Next Actions"
+    - "Appendix"
