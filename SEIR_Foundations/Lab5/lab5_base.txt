@@ -1,0 +1,155 @@
+Lab 5A — Red Team
+“Break It Like a Professional (Without Breaking the Law)”
+Objective
+
+    Red Team simulates realistic attacker behavior against the systems you built in Labs 1–4:
+      AWS Tokyo = authoritative data + compliance boundary
+      GCP NY/Iowa = compute-only branch + VPN corridor
+      AI drafting exists (Bedrock/Vertex) but must remain human-governed
+
+Red Team’s mission is to discover and demonstrate risk, not to cause damage.
+
+
+Scope and Rules of Engagement (ROE)
+✅ Allowed Targets (Lab Environment Only)
+
+    YOUR: NY GCP private app URL (reachable only from inside VPN corridor)
+    YOUR: Tokyo app components that are explicitly in-scope for the lab
+    Your own lab VPCs/subnets
+    Your own accounts/projects only
+    O'Block Infrastructure
+
+❌ Forbidden
+
+    Any public internet scanning outside the lab
+    Any brute-force password attacks
+    Any attempts to access real PHI (none should exist in lab)
+    Any destructive actions (deleting resources, wiping DB, crypto-mining, DoS)
+    Any persistence/backdoors beyond what the lab explicitly allows
+
+Rate limits (to prevent “accidental DoS”)
+Web scanners: cap to low thread counts, modest request rate
+Port scans: limited to specific CIDRs/hosts you own
+Logging requirement
+  Red Team must maintain an activity log:
+      timestamp
+      tool used
+      target
+      goal
+      result
+      evidence artifact path
+
+This becomes part of the audit defense later.
+
+The Red Team Mindset (What You’re Practicing)
+  Red Team is trained to find:
+      Broken assumptions
+      Misconfigurations
+      Over-permissive access
+      Missing monitoring
+      Unsafe defaults
+
+You are not “being evil.” You are being useful.
+
+Tooling Framework (Open Source)
+
+Red Team tools are grouped by what professionals actually do.
+A) Recon and Mapping
+    Goal: understand what exists and how it’s reachable.
+
+    Tools
+        nmap (targeted, controlled scanning)
+        dig / nslookup (DNS)
+        traceroute / mtr (pathing inside corridor)
+        curl (headers, TLS, auth flow)
+
+    Artifacts
+        recon/targets.txt
+        recon/nmap.txt
+        recon/dns.txt
+        recon/tls_headers.txt
+
+Constraint: scanning must be confined to your lab CIDRs and named targets.
+
+B) Web App Testing (OWASP-focused)
+    Goal: evaluate web layer risks tied to OWASP Top 10 (2021).
+
+    Tools
+        OWASP ZAP (proxy + passive scan; active only if permitted)
+        nikto (misconfig/known patterns)
+        ffuf or feroxbuster (content discovery)
+        testssl.sh (TLS posture)
+
+    Artifacts
+        web/zap_report.html
+        web/content_discovery.txt
+        web/tls_report.txt
+
+Constraint: No exploit payload sharing in write-ups. Focus on the finding, impact, fix.
+
+C) Dependency and Image/Host Vulnerability Discovery
+    Goal: find “known bad stuff” before attackers do.
+
+    Tools
+        trivy (VM/container filesystem scanning if applicable)
+        grype (SBOM/vuln scanning)
+        syft (SBOM generation)
+        osv-scanner (open source dependency vulnerabilities)
+
+    Artifacts
+        vuln/sbom.json
+        vuln/trivy.txt
+        vuln/grype.txt
+
+D) IaC Security (Terraform)
+    Goal: find misconfigurations in Terraform before they become breaches.
+    
+    Tools
+        checkov (Terraform scanning)
+        tfsec (Terraform scanning)
+        tflint (lint)
+        terraform validate + terraform fmt -check
+
+    Artifacts
+        iac/checkov.json
+        iac/tfsec.txt
+        iac/tflint.txt
+
+Red Team must identify at least 3 IaC risks and propose remediations.
+
+E) Cloud Config & Identity Review (Open Source + CLI)
+    Goal: find IAM and network mistakes that cause the biggest breaches.
+    
+    Tools
+        AWS CLI + pmapper (IAM privilege mapping) (if permitted)
+        AWS CLI + cloudsplaining (policy risk) (if permitted)
+        GCP gcloud (IAM + network review)
+        prowler (AWS security posture scanning) (read-only posture check)
+        gcp_scanner equivalents vary; keep it simple with gcloud asset if available
+
+    Artifacts
+        cloud/aws_iam_findings.txt
+        cloud/gcp_iam_findings.txt
+        cloud/posture_report.txt
+
+Constraint: read-only posture checks only; no privilege escalation attempts.
+
+F) “AI Surface” Review (Minimal, Controlled)
+    Because someone will ask, yes: AI has its own OWASP Top 10 (LLM/GenAI).
+    But in this course, AI is a drafting assistant with human override, so Red Team focuses on governance failures, not “prompt hack tricks.”
+
+    Tools
+        None required beyond careful review + test cases
+    
+    Artifacts
+        ai/guardrails_checklist.md
+    
+    What Red Team checks
+        Is PHI ever included in AI prompts?
+        Can AI output trigger automated actions? (should be no)
+        Is “human override” enforced?
+        Are evidence packs sanitized before being sent to AI?
+
+Constraint: No sharing prompt injection payloads. The learning goal is governance: “AI cannot be an authority.”
+
+

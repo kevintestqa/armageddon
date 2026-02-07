@@ -1,0 +1,15 @@
+Student Deliverables (graded)
+outputs/extracted_findings.json
+outputs/consolidated_security_report.md
+A short “Analyst Notes” page (10–15 lines) answering:
+    Which findings are likely duplicates?
+    Which 5 findings would you investigate first and why?
+    Which findings require immediate containment vs scheduled remediation?
+
+Bonus (Honors)
+
+    Chunking large reports into batches with a stable merging strategy
+    Source-specific parsers for ZAP/Trivy/Checkov instead of generic extraction
+    Add a “Evidence Map” section: each finding links back to file + line path
+
+
