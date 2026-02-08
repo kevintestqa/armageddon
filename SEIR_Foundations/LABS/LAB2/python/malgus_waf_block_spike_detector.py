@@ -2,7 +2,7 @@
 import boto3
 from datetime import datetime, timezone, timedelta
 
-# Reason why Darth Malgus would be pleased with this script.
+# Reason why Ganondorf would be pleased with this script.
 # A Sith Lord doesn't wait for the alarm—he detects the uprising before it forms.
 
 # Reason why this script is relevant to your career.

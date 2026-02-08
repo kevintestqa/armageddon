@@ -10,7 +10,7 @@ audit-pack/
 ├── 03_waf-proof.txt
 ├── 04_cloudtrail-change-proof.txt
 ├── 05_network-corridor-proof.txt
-└── evidence.json   (Malgus scripts output)
+└── evidence.json   (Ganondorf scripts output)
 
 Deliverable B — One paragraph “auditor narrative”
 “この設計が APPI 的に安全で、なぜ DB を海外に置けないか”を 8〜12 行で説明。
@@ -64,32 +64,32 @@ Download one file manually (sanity check):
 
     aws s3 cp s3://Class_Lab3/cloudfront-logs/<somefile>.gz .
 
-Script 1 — malgus_residency_proof.py
+Script 1 — Ganondorf_residency_proof.py
 Creates a “DB only in Tokyo” proof file.
 
-Script 2 — malgus_tgw_corridor_proof.py
+Script 2 — Ganondorf_tgw_corridor_proof.py
 Shows TGW attachments + routes that form the “legal corridor”.
 
-Script 3 — malgus_cloudtrail_last_changes.py
+Script 3 — Ganondorf_cloudtrail_last_changes.py
 Pulls recent CloudTrail events for “who changed what”.
         --> Event history is available by default; it provides a 90-day record of management events.
 
-Script 4 — malgus_waf_summary.py
+Script 4 — Ganondorf_waf_summary.py
 Summarizes WAF logs (Allow vs Block) from CloudWatch Logs destination.
 WAF logging destinations: CloudWatch Logs, S3, Firehose.
 
-Script 5 — malgus_cloudfront_log_explainer.py (optional)
+Script 5 — Ganondorf_cloudfront_log_explainer.py (optional)
 If you ingest CloudFront standard logs into S3, this script reads a log file and counts Hit/Miss/RefreshHit.
 
 CloudFront standard logs reference Hit / RefreshHit semantics. 
 A) Standard logs in S3 (downloaded locally)
 
-        python3 malgus_cloudfront_log_explainer.py --mode standard cloudfront.log.gz
-        python3 malgus_cloudfront_log_explainer.py --mode standard cloudfront_part1.log cloudfront_part2.log
+        python3 Ganondorf_cloudfront_log_explainer.py --mode standard cloudfront.log.gz
+        python3 Ganondorf_cloudfront_log_explainer.py --mode standard cloudfront_part1.log cloudfront_part2.log
 
 B) Real-time logs as JSON lines
 
-        python3 malgus_cloudfront_log_explainer.py --mode realtime realtime_logs.jsonl
+        python3 Ganondorf_cloudfront_log_explainer.py --mode realtime realtime_logs.jsonl
 
 Final Lab Assumptions (Locked)
     S3 Bucket: Class_Lab3
@@ -98,14 +98,14 @@ Final Lab Assumptions (Locked)
 
 Running Scripts:
 
-        python3 malgus_cloudfront_log_explainer.py --latest 5
-        python3 malgus_cloudfront_log_explainer.py --prefix cloudfront-logs/ --latest 10
-        python3 malgus_cloudfront_log_explainer.py --prefix cloudfront-logs/ --latest 5 --keep
+        python3 Ganondorf_cloudfront_log_explainer.py --latest 5
+        python3 Ganondorf_cloudfront_log_explainer.py --prefix cloudfront-logs/ --latest 10
+        python3 Ganondorf_cloudfront_log_explainer.py --prefix cloudfront-logs/ --latest 5 --keep
 
 
 From stdin (nice for pipelines)
 
-        zcat cloudfront.log.gz | python3 malgus_cloudfront_log_explainer.py --mode standard -
+        zcat cloudfront.log.gz | python3 Ganondorf_cloudfront_log_explainer.py --mode standard -
 
 Where “Hit / Miss / RefreshHit” come from (student-facing truth)
     In standard CloudFront logs, you usually read the field:

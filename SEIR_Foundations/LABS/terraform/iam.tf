@@ -39,10 +39,7 @@ resource "aws_iam_instance_profile" "satellite_instance_profile01" {
   name = "${local.name_prefix}-instance-profile01"
   role = aws_iam_role.satellite_ec2_role01.name
 }
-# resource "aws_iam_instance_profile" "satellite_instance_profile02" {
-#   name = "${local.name_prefix}-instance-profile02"
-#   role = aws_iam_role.satellite_ec2_role02.name
-# }
+
 resource "aws_iam_policy" "satellite_secrets_policy" {
   name        = "secrets_policy"
   description = "EC2 to RDS using Secrets Manager"

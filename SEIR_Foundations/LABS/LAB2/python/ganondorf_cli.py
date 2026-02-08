@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-MALGUS CLI — Ops/Sec Automation Toolkit
+Ganondorf CLI — Ops/Sec Automation Toolkit
 Chewbacca = Terraform (builds the world)
-Darth Malgus = Python (controls the battlefield)
+Ganondorf = Python (controls the battlefield)
 
-# Reason why Darth Malgus would be pleased with this script.
+# Reason why Ganondorf would be pleased with this script.
 # The Dark Side hates dashboards. It wants repeatable truth in one command.
 
 # Reason why this script is relevant to your career.
@@ -42,7 +42,7 @@ def epoch(dt: datetime) -> int:
     return int(dt.timestamp())
 
 def die(msg: str, code: int = 2) -> None:
-    print(f"[MALGUS] {msg}", file=sys.stderr)
+    print(f"[Ganondorf] {msg}", file=sys.stderr)
     sys.exit(code)
 
 def require_requests():
@@ -69,7 +69,7 @@ def cmd_triage(args):
     resp = cw.describe_alarms(StateValue=args.state, MaxRecords=args.max)
     alarms = resp.get("MetricAlarms", [])
 
-    print(f"\n[MALGUS] Alarm triage: state={args.state}, count={len(alarms)}\n")
+    print(f"\n[Ganondorf] Alarm triage: state={args.state}, count={len(alarms)}\n")
 
     for a in alarms:
         name = a.get("AlarmName")
@@ -110,7 +110,7 @@ def cmd_insights(args):
         r = logs.get_query_results(queryId=qid)
         status = r.get("status")
         if status == "Complete":
-            print(f"\n[MALGUS] Logs Insights results ({args.log_group})\nQuery:\n{args.query}\n")
+            print(f"\n[Ganondorf] Logs Insights results ({args.log_group})\nQuery:\n{args.query}\n")
             safe_print_kv_list(r.get("results", []))
             return
         if status in ("Failed", "Cancelled", "Timeout"):
@@ -126,7 +126,7 @@ def cmd_insights(args):
 
 def cmd_cf_probe(args):
     require_requests()
-    print(f"\n[MALGUS] CloudFront cache probe: {args.url}\n")
+    print(f"\n[Ganondorf] CloudFront cache probe: {args.url}\n")
 
     for i in range(args.rounds):
         r = requests.get(args.url, timeout=10, allow_redirects=False)
@@ -158,7 +158,7 @@ def cmd_cloak_test(args):
     cf_code, _ = get_status(args.cloudfront_url)
     alb_code, alb_headers = get_status(args.alb_url)
 
-    print("\n[MALGUS] Origin cloaking test")
+    print("\n[Ganondorf] Origin cloaking test")
     print(f"CloudFront URL: {args.cloudfront_url} -> {cf_code}")
     print(f"ALB direct URL: {args.alb_url} -> {alb_code}")
 
@@ -199,7 +199,7 @@ def cmd_drift(args):
 
     # Never print password
     secret_meta = {k: sec.get(k) for k in ("host", "port", "dbname", "username")}
-    print("\n[MALGUS] Drift check (SSM vs Secrets meta; password not displayed)\n")
+    print("\n[Ganondorf] Drift check (SSM vs Secrets meta; password not displayed)\n")
     print("SSM path:", args.ssm_path)
     print("Secret:", args.secret_id)
     print("\nSecret meta:", pp(secret_meta), "\n")
@@ -342,7 +342,7 @@ def cmd_bedrock_report(args):
     if args.out:
         with open(args.out, "w", encoding="utf-8") as f:
             f.write(text)
-        print(f"[MALGUS] Wrote report: {args.out}")
+        print(f"[Ganondorf] Wrote report: {args.out}")
     else:
         print(text)
 
@@ -362,12 +362,12 @@ def cmd_invalidate(args):
         DistributionId=args.distribution_id,
         InvalidationBatch={
             "Paths": {"Quantity": len(args.paths), "Items": args.paths},
-            "CallerReference": f"malgus-{int(time.time())}"
+            "CallerReference": f"Ganondorf-{int(time.time())}"
         }
     )
 
     inv = resp["Invalidation"]
-    print("\n[MALGUS] Invalidation created")
+    print("\n[Ganondorf] Invalidation created")
     print("Id:", inv["Id"])
     print("Status:", inv["Status"])
     print("Paths:", args.paths)
@@ -378,7 +378,7 @@ def cmd_invalidate(args):
             status = r["Invalidation"]["Status"]
             print("Status:", status)
             if status == "Completed":
-                print("[MALGUS] Invalidation completed.")
+                print("[Ganondorf] Invalidation completed.")
                 break
             time.sleep(5)
 
@@ -388,7 +388,7 @@ def cmd_invalidate(args):
 # ---------------------------
 
 def build_parser():
-    p = argparse.ArgumentParser(prog="malgus_cli.py", description="Darth Malgus Ops CLI (Python)")
+    p = argparse.ArgumentParser(prog="Ganondorf_cli.py", description="Ganondorf Ops CLI (Python)")
 
     sub = p.add_subparsers(dest="cmd", required=True)
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import json, sys, boto3
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus loves repeatable domination: same evidence, same format, every time.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf loves repeatable domination: same evidence, same format, every time.
 
 # Reason why this script is relevant to your career.
 # Prompt-driven summarization with guardrails is now a real ops skill (AI-assisted IR).
@@ -15,7 +15,7 @@ br = boto3.client("bedrock-runtime")
 
 def main():
     if len(sys.argv) < 4:
-        print("Usage: malgus_bedrock_ir_generator_local.py <model_id> <evidence.json> <template.md>")
+        print("Usage: Ganondorf_bedrock_ir_generator_local.py <model_id> <evidence.json> <template.md>")
         sys.exit(1)
 
     model_id, evidence_path, template_path = sys.argv[1], sys.argv[2], sys.argv[3]

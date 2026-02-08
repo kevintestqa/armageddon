@@ -2,8 +2,8 @@
 import boto3
 from datetime import datetime, timezone, timedelta
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus enjoys crushing enemies—but he hates wasting credits on sloppy operations.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf enjoys crushing enemies—but he hates wasting credits on sloppy operations.
 
 # Reason why this script is relevant to your career.
 # Cost-aware engineering is modern DevOps/SRE reality: guardrails prevent surprise bills.

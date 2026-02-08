@@ -2,8 +2,8 @@
 import boto3, time, argparse
 from datetime import datetime, timezone, timedelta
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus wants answers extracted from chaos—logs become obedient.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf wants answers extracted from chaos—logs become obedient.
 
 # Reason why this script is relevant to your career.
 # Logs Insights automation is a real IR skill: query, correlate, summarize—fast.

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import requests, sys, time
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus enjoys watching cache lies collapse under repeated probing.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf enjoys watching cache lies collapse under repeated probing.
 
 # Reason why this script is relevant to your career.
 # CDN caching mistakes cause real incidents; knowing how to test them is a marketable skill.
@@ -23,6 +23,6 @@ def probe(url, rounds=3, delay=2):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: malgus_cloudfront_cache_probe.py <url>")
+        print("Usage: Ganondorf_cloudfront_cache_probe.py <url>")
         sys.exit(1)
     probe(sys.argv[1])

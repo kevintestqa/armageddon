@@ -2,8 +2,8 @@
 import json, os, subprocess, sys, argparse, datetime
 from pathlib import Path
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus doesn't trust dashboards. He trusts artifacts. This script turns infrastructure into evidence.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf doesn't trust dashboards. He trusts artifacts. This script turns infrastructure into evidence.
 # Reason why this script is relevant to your career.
 # Audits, incidents, and regulated environments require reproducible proof—automation wins promotions.
 # How you would talk about this script at an interview.

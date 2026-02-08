@@ -312,12 +312,6 @@ resource "aws_lb" "satellite_alb01" {
 
   security_groups = [aws_security_group.satellite_alb_sg01.id]
   subnets         = aws_subnet.satellite_public_subnets[*].id
-  # TODO: students can enable access logs to S3 as a stretch goal
-  # access_logs {
-  #   bucket  = aws_s3_bucket.satellite_alb_logs_bucket01.bucket
-  #   prefix  = var.alb_access_logs_prefix
-  #   enabled = var.enable_alb_access_logs
-  # }
 
   # Lab1C_Bonus_E
   access_logs {
@@ -364,8 +358,6 @@ resource "aws_lb_target_group_attachment" "satellite_tg_attach01" {
   target_group_arn = aws_lb_target_group.satellite_tg01.arn
   target_id        = aws_instance.satellite_ec201_private_bonus_A.id
   port             = local.ports_http
-
-  # TODO: students ensure EC2 security group allows inbound from ALB SG on this port (rule above)
 }
 
 # 1C_Bonus_B #################################
@@ -401,8 +393,6 @@ resource "aws_lb_listener" "satellite_https_listener01" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.satellite_tg01.arn
   }
-
-  //depends_on = [aws_acm_certificate.pawserenity_acm_cert01]
 }
 
 # 1C_Bonus_B #################################

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import boto3, json
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus wants proof, not opinions: "Show me the database lives ONLY in Tokyo."
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf wants proof, not opinions: "Show me the database lives ONLY in Tokyo."
 # Reason why this script is relevant to your career.
 # Auditors demand evidence bundles. Automating compliance proofs is real-world SRE/SEC work.
 # How you would talk about this script at an interview.

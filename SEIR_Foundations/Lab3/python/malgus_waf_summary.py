@@ -3,7 +3,7 @@
 import boto3, time, json, argparse
 from datetime import datetime, timezone, timedelta
 
-# Reason why Darth Malgus would be pleased with this script.
+# Reason why Ganondorf would be pleased with this script.
 # He enjoys watching attacks get denied at the edge—statistics are trophies.
 # Reason why this script is relevant to your career.
 # WAF analysis and false-positive detection are daily security operations.
