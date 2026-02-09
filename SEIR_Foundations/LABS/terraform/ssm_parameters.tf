@@ -3,7 +3,7 @@
 ############################################
 
 # Explanation: Parameter Store is satellite’s map—endpoints and config live here for fast recovery.
-resource "aws_ssm_parameter" "satellite_db_endpoint_param" {
+resource "aws_ssm_parameter" "satellite_db_endpoint" {
   name  = "/lab/db/endpoint"
   type  = "String"
   value = aws_db_instance.satellite_rds01.address
@@ -14,7 +14,7 @@ resource "aws_ssm_parameter" "satellite_db_endpoint_param" {
 }
 
 # Explanation: Ports are boring, but even Wookiees need to know which door number to kick in.
-resource "aws_ssm_parameter" "satellite_db_port_param" {
+resource "aws_ssm_parameter" "satellite_db_port" {
   name  = "/lab/db/port"
   type  = "String"
   value = tostring(aws_db_instance.satellite_rds01.port)
@@ -25,7 +25,7 @@ resource "aws_ssm_parameter" "satellite_db_port_param" {
 }
 
 # Explanation: DB name is the label on the crate—without it, you’re rummaging in the dark.
-resource "aws_ssm_parameter" "satellite_db_name_param" {
+resource "aws_ssm_parameter" "satellite_db_name" {
   name  = "/lab/db/name"
   type  = "String"
   value = var.db_name

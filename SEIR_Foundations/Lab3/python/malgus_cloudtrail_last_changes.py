@@ -2,8 +2,8 @@
 import boto3, json
 from datetime import datetime, timezone, timedelta
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus doesn't ask "what changed?" — he interrogates the timeline until it confesses.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf doesn't ask "what changed?" — he interrogates the timeline until it confesses.
 # Reason why this script is relevant to your career.
 # Change attribution is core to incident response and audit defense.
 # How you would talk about this script at an interview.

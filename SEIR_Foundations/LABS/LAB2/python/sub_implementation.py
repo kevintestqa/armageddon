@@ -94,4 +94,4 @@ def cmd_collect_evidence(args):
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(evidence, f, indent=2)
 
-    print(f"[MALGUS] Evidence bundle written: {args.out}")
+    print(f"[Ganondorf] Evidence bundle written: {args.out}")

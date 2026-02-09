@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import requests, sys
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus approves of sealed gates: the origin must be unreachable except through the edge.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf approves of sealed gates: the origin must be unreachable except through the edge.
 
 # Reason why this script is relevant to your career.
 # Origin exposure is a common security gap; proving cloaking is an actual deliverable.
@@ -20,7 +20,7 @@ def head(url):
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: malgus_origin_cloak_tester.py <cloudfront_url> <alb_url>")
+        print("Usage: Ganondorf_origin_cloak_tester.py <cloudfront_url> <alb_url>")
         sys.exit(1)
 
     cf_url, alb_url = sys.argv[1], sys.argv[2]

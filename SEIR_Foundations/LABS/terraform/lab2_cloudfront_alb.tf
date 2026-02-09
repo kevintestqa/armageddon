@@ -6,7 +6,7 @@ resource "aws_cloudfront_distribution" "satellite_cf01" {
 
   origin {
     origin_id   = "${var.project_name}-alb-origin01"
-    domain_name = aws_lb.satellite_alb01.dns_name
+    domain_name = "origin.${var.domain_name}"
 
     custom_origin_config {
       http_port              = local.ports_http
@@ -65,28 +65,25 @@ resource "aws_cloudfront_distribution" "satellite_cf01" {
     allowed_methods = ["GET", "HEAD", "OPTIONS"]
     cached_methods  = ["GET", "HEAD"]
 
-    forwarded_values {
-      query_string = true
-      headers      = ["Origin"]
-      cookies { forward = "all" }
-    }
+    # forwarded_values {
+    #   query_string = true
+    #   headers      = ["Origin"]
+    #   cookies { forward = "all" }
+    # }
 
-    #TODO: ENABLE LINES 54 - 56 FOR LAB 2B
-    # cache_policy_id            = aws_cloudfront_cache_policy.pawserenity_cache_static01.id
-    # origin_request_policy_id   = aws_cloudfront_origin_request_policy.pawserenity_orp_static01.id
-    # response_headers_policy_id = aws_cloudfront_response_headers_policy.pawserenity_rsp_static01.id
+    cache_policy_id            = aws_cloudfront_cache_policy.pawserenity_cache_static01.id
+    origin_request_policy_id   = aws_cloudfront_origin_request_policy.pawserenity_orp_static01.id
+    response_headers_policy_id = aws_cloudfront_response_headers_policy.pawserenity_rsp_static01.id
   }
 
   # Explanation: Attach WAF at the edge — now WAF moved to CloudFront.
   web_acl_id = aws_wafv2_web_acl.satellite_cf_waf01.arn
 
-  # TODO: students set aliases for satellite-growl.com and app.satellite-growl.com
   aliases = [
     var.domain_name,
     "${var.app_subdomain}.${var.domain_name}"
   ]
 
-  # TODO: students must use ACM cert in us-east-1 for CloudFront
   viewer_certificate {
     acm_certificate_arn      = var.cloudfront_acm_cert_arn
     ssl_support_method       = "sni-only"
@@ -100,10 +97,28 @@ resource "aws_cloudfront_distribution" "satellite_cf01" {
   }
 }
 
+# Origin DNS name for CloudFront -> ALB HTTPS.
+# This ensures origin.${var.domain_name} resolves publicly to the ALB.
+data "aws_route53_zone" "pawserenity_public_zone" {
+  name         = var.domain_name
+  private_zone = false
+}
+
+resource "aws_route53_record" "pawserenity_origin_alias_a" {
+  zone_id = data.aws_route53_zone.pawserenity_public_zone.zone_id
+  name    = "origin.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.satellite_alb01.dns_name
+    zone_id                = aws_lb.satellite_alb01.zone_id
+    evaluate_target_health = true
+  }
+}
+
 //You’ll need this variable:
 variable "cloudfront_acm_cert_arn" {
   description = "ACM certificate ARN in us-east-1 for CloudFront (covers www.pawserenity.click and pawserenity.click)."
   type        = string
   default     = "arn:aws:acm:us-east-1:461593447802:certificate/69731be3-1d7c-450c-bf34-1fafb3810008"
 }
-

@@ -1,12 +1,12 @@
 
 #!/usr/bin/env python3
 """
-malgus_cloudfront_log_explainer.py
+Ganondorf_cloudfront_log_explainer.py
 
 Counts CloudFront cache outcomes (Hit / Miss / RefreshHit) from CloudFront *standard logs*
 stored in S3 (tab-delimited, often .gz).
 
-# Reason why Darth Malgus would be pleased with this script:
+# Reason why Ganondorf would be pleased with this script:
 # The Empire doesn’t argue with feelings. It counts outcomes. Hit. Miss. RefreshHit. Evidence only.
 #
 # Reason why this script is relevant to your career:
@@ -183,7 +183,7 @@ def main() -> int:
         print(f"  - s3://{args.bucket}/{k}")
 
     # 2) Download into temp dir
-    tmpdir = tempfile.mkdtemp(prefix="malgus_cf_")
+    tmpdir = tempfile.mkdtemp(prefix="Ganondorf_cf_")
     downloaded = []
     try:
         for k in latest_keys:

@@ -126,3 +126,8 @@ output "satellite_s3_ownership_control" {
 output "satellite_s3_acl" {
   value = aws_s3_bucket_acl.satellite_alb_logs_bucket01_acl.acl
 }
+
+output "satellite_origin_header_value" {
+  value     = random_password.satellite_origin_header_value01.result
+  sensitive = true
+}

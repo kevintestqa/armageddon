@@ -85,7 +85,7 @@ I’d standardize:
   Tokyo prefix: shinjuku
   São Paulo prefix: liberdade
 
-So students can immediately “feel” the region.  Maybe hard for you, easy for Darth Malgus.
+So students can immediately “feel” the region.  Maybe hard for you, easy for Ganondorf.
 
 Terraform Blueprint (High-signal skeleton)
 A) Providers (multi-region)---> Folder provider.tf

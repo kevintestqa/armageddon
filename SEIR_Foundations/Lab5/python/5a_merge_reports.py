@@ -8,8 +8,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 import urllib.request
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus hates scattered intelligence. This script consolidates the battlefield reports into one briefing.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf hates scattered intelligence. This script consolidates the battlefield reports into one briefing.
 # Reason why this script is relevant to your career.
 # Real security work is turning tool noise into analyst-ready evidence without inventing facts.
 # How you would talk about this script at an interview.

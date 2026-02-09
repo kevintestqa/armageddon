@@ -23,8 +23,8 @@ import urllib.request
 # ----------------------------
 # Sith-style headers (per your class theme)
 # ----------------------------
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus despises scattered intelligence. He wants one briefing with evidence trails.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf despises scattered intelligence. He wants one briefing with evidence trails.
 # Reason why this script is relevant to your career.
 # Real security work is aggregating noisy tools into an analyst-ready packet without inventing facts.
 # How you would talk about this script at an interview.

@@ -2,8 +2,8 @@
 import boto3
 from datetime import datetime, timezone, timedelta
 
-# Reason why Darth Malgus would be pleased with this script.
-# Malgus doesn't "check the console"—he demands a battlefield map in one command.
+# Reason why Ganondorf would be pleased with this script.
+# Ganondorf doesn't "check the console"—he demands a battlefield map in one command.
 
 # Reason why this script is relevant to your career.
 # On-call engineers automate triage: reduce time-to-context, not just time-to-click.

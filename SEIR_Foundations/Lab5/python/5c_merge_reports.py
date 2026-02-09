@@ -754,7 +754,7 @@ def main():
         print(f"[{m}] wrote: {out_dir/'duplicate_map.json'}")
         print(f"[{m}] wrote: {out_dir/'consolidated_security_report.md'}")
 
-    print("Taris briefing complete. Malgus is satisfied.")
+    print("Taris briefing complete. Ganondorf is satisfied.")
 
 if __name__ == "__main__":
     main()

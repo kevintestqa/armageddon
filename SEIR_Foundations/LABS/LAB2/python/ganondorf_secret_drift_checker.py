@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import boto3, json, os
 
-# Reason why Darth Malgus would be pleased with this script.
-# Drift is rebellion—Malgus crushes it before it becomes a civil war.
+# Reason why Ganondorf would be pleased with this script.
+# Drift is rebellion—Ganondorf crushes it before it becomes a civil war.
 
 # Reason why this script is relevant to your career.
 # Config drift is a top cause of outages; checking and proving drift is SRE/SEC gold.
