@@ -2,7 +2,6 @@
 resource "aws_route53_record" "pawserenity_apex_to_cf01" {
   zone_id = var.hosted_zone_id
   name    = trimsuffix(data.aws_route53_zone.pawserenity.name, ".")
-  # name    = var.domain_name Kevin -Reusing arguments from original route53_apex
   type            = "A"
   allow_overwrite = true
 

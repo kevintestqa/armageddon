@@ -1,25 +1,25 @@
-Script 1 — malgus_alarm_triage.py
+Script 1 — Ganondorf_alarm_triage.py
 What it does: Pulls active alarms, prints the worst ones, and summarizes alarm history.
 
-Script 2 — malgus_logsinsights_runner.py
+Script 2 — Ganondorf_logsinsights_runner.py
 What it does: Runs a Logs Insights query on a log group and prints top results (WAF or app logs).
 
-Script 3 — malgus_waf_block_spike_detector.py
+Script 3 — Ganondorf_waf_block_spike_detector.py
 What it does: Looks at WAF CloudWatch metrics (or WAF Logs if you prefer) and flags spikes in BLOCKs.
 
-Script 4 — malgus_secret_drift_checker.py
+Script 4 — Ganondorf_secret_drift_checker.py
 What it does: Compares Secrets Manager DB creds vs expected SSM “known-good” fields (without printing the password).
 
-Script 5 — malgus_cloudfront_cache_probe.py
+Script 5 — Ganondorf_cloudfront_cache_probe.py
 What it does: Probes CloudFront endpoints and prints cache behavior (x-cache, age, etc.) to validate Lab 2B.
 
-Script 6 — malgus_origin_cloak_tester.py
+Script 6 — Ganondorf_origin_cloak_tester.py
 What it does: Confirms direct ALB access fails while CloudFront access succeeds (Lab 2 requirement).
                                                                      
-Script 7 — malgus_bedrock_ir_generator_local.py
+Script 7 — Ganondorf_bedrock_ir_generator_local.py
 What it does: Runs the Bedrock report generator locally against an evidence JSON file (great for testing prompts). 
 
-Script 8 — malgus_cost_guardrail_estimator.py
+Script 8 — Ganondorf_cost_guardrail_estimator.py
 What it does: Estimates “did we just create a cost bomb?” by checking CloudFront invalidations and WAF log volume signals (lightweight guardrail).
 
 Suggested way to assign these (so it doesn’t become random Python cosplay)

@@ -3,13 +3,13 @@ This is the final evolution: one command to collect truth, one command to genera
 You now have:
 
 Chewbacca (Terraform)  → builds reality
-Malgus (Python)        → interrogates reality
+Ganondorf (Python)        → interrogates reality
 Bedrock                → summarizes reality
 Human                  → owns responsibility
 
 Below is the final Dark Side upgrade.
 
-MALGUS CLI — Phase IV
+Ganondorf CLI — Phase IV
 collect-evidence (Auto-IR Fuel Generator)
 This subcommand does exactly what real on-call engineers do under pressure:
 
@@ -52,7 +52,7 @@ This file is:
     safe (no secrets)
     Bedrock-ready
 
-Code: Add collect-evidence.py to malgus_cli.py
+Code: Add collect-evidence.py to Ganondorf_cli.py
 1️⃣ Add helper functions (near top of file)
 
 2️⃣ Add the subcommand implementation: sub_implementation.py
@@ -63,7 +63,7 @@ Add this inside build_parser(): cli_parser.py
 How to Use It (This Is the Magic)
 Step 1 — Collect evidence
 
-    python malgus_cli.py collect-evidence \
+    python Ganondorf_cli.py collect-evidence \
       --incident-id IR-001 \
       --minutes 20 \
       --app-log-group "/aws/ec2/chewbacca-app" \
@@ -73,7 +73,7 @@ Step 1 — Collect evidence
 
 Step 2 — Generate report
 
-    python malgus_cli.py bedrock-report \
+    python Ganondorf_cli.py bedrock-report \
       --model-id <BEDROCK_MODEL_ID> \
       --evidence-json evidence.json \
       --out incident-report.md
@@ -83,7 +83,7 @@ Step 3 — Human review (required)
     Classify trust level (Green / Yellow / Red)
     Submit both files
 
-Why Darth Malgus Is Extremely Pleased
+Why Ganondorf Is Extremely Pleased
 This pipeline:
       Eliminates panic
       Eliminates dashboard hopping
@@ -91,8 +91,8 @@ This pipeline:
       Forces discipline
       Makes AI safe
 
-Malgus does not “debug.”
-Malgus interrogates reality until it confesses.
+Ganondorf does not “debug.”
+Ganondorf interrogates reality until it confesses.
 
 Interview Nuclear Option (Students Should Memorize)
     --> “I built a Python-based incident response CLI that standardizes evidence collection across

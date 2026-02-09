@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import boto3, json
 
-# Reason why Darth Malgus would be pleased with this script.
-# Corridors must be explicit. Malgus hates "it should route" — he wants "it DOES route."
+# Reason why Ganondorf would be pleased with this script.
+# Corridors must be explicit. Ganondorf hates "it should route" — he wants "it DOES route."
 # Reason why this script is relevant to your career.
 # Networking evidence is critical for audits and incident response in multi-region enterprises.
 # How you would talk about this script at an interview.

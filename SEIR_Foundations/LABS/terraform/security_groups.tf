@@ -37,18 +37,6 @@ resource "aws_vpc_security_group_egress_rule" "satellite_ec2_sg_egress_db" {
   cidr_ipv4         = local.all_ip_address
 }
 
-# resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_sg_ingress_alb" {
-#   ip_protocol                  = local.tcp_protocol
-#   security_group_id            = aws_security_group.satellite_ec2_sg01.id
-#   referenced_security_group_id = aws_security_group.satellite_alb_sg01.id
-#   from_port                    = local.ports_http
-#   to_port                      = local.ports_http
-
-#     tags = {
-#     Name = "${local.name_prefix}-ec2-sg_ingress_alb"
-#   }
-# }
-
 
 # Explanation: RDS SG is the Rebel vault—only the app server gets a keycard.
 resource "aws_security_group" "satellite_rds_sg01" {
@@ -106,25 +94,6 @@ resource "aws_security_group" "satellite_alb_sg01" {
   }
 }
 
-# Kevin - Commenting this out for lab 2A
-# Allow public HTTP to reach the ALB (needed for HTTP:80 listener + redirect to HTTPS)
-# resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_http" {
-#   ip_protocol       = local.tcp_protocol
-#   security_group_id = aws_security_group.satellite_alb_sg01.id
-#   from_port         = local.ports_http
-#   to_port           = local.ports_http
-#   cidr_ipv4         = var.all_ip_address
-# }
-
-# Kevin - Commenting this out for lab 2A
-# resource "aws_vpc_security_group_ingress_rule" "satellite_alb_ingress_https" {
-#   ip_protocol       = local.tcp_protocol
-#   security_group_id = aws_security_group.satellite_alb_sg01.id
-#   from_port         = local.ports_https
-#   to_port           = local.ports_https
-#   cidr_ipv4         = var.all_ip_address
-# }
-
 # TODO: students set outbound to target group port (usually 80) to private targets
 # Kevin: Need to investigate this further
 resource "aws_vpc_security_group_egress_rule" "satellite_alb_egress_http" {
@@ -134,16 +103,3 @@ resource "aws_vpc_security_group_egress_rule" "satellite_alb_egress_http" {
   from_port                    = local.ports_http
   to_port                      = aws_lb_target_group.satellite_tg01.port
 }
-
-# Explanation: satellite only opens the hangar door — allow ALB -> EC2 on app port (e.g., 80).
-# Kevin -  IDK if i need this
-# resource "aws_vpc_security_group_ingress_rule" "satellite_ec2_ingress_from_alb_http" {
-#   ip_protocol                  = local.tcp_protocol
-#   security_group_id            = aws_security_group.satellite_ec2_sg01.id
-#   referenced_security_group_id = aws_security_group.satellite_alb_sg01.id
-#   from_port                    = local.ports_http
-#   to_port                      = local.ports_http
-#   tags = {
-#     Name = "${local.name_prefix}-ec2-sg_ingress_alb"
-#   }
-# }
