@@ -1,0 +1,368 @@
+Architecture
+
+API Gateway (POST /intake) → Lambda (Python) → RDS MySQL
+Secrets Manager holds DB creds.
+
+0) Set your lab variables
+
+export AWS_REGION="us-east-1"
+
+#Chewbacca: The Wookiee demands names, not “db1” like a boring droid.
+export DB_ID="chewbacca-mysql-11a"
+export DB_NAME="lab11"
+export DB_USER="admin"
+export SECRET_NAME="chewbacca-db-secret-11a"
+
+export LAMBDA_NAME="chewbacca-intake-lambda-11a"
+export API_NAME="chewbacca-intake-api-11a"
+export STAGE_NAME="prod"
+
+#Chewbacca: Your ALB days are over. Now you suffer with VPC-enabled Lambda.
+export LAMBDA_SG_NAME="chewbacca-lambda-sg-11a"
+export RDS_SG_NAME="chewbacca-rds-sg-11a"
+
+Verify region:
+
+    aws configure get region
+
+1) Identify Default VPC + subnets
+
+    #Chewbacca: Find the Wookiee’s home (default VPC).
+    export VPC_ID="$(aws ec2 describe-vpcs \
+      --filters Name=isDefault,Values=true \
+      --query "Vpcs[0].VpcId" --output text)"
+    
+    echo "VPC_ID=$VPC_ID"
+
+Get subnets in default VPC:
+
+    #Chewbacca: Subnets are like Kashyyyk tree branches—pick a few.
+    aws ec2 describe-subnets \
+      --filters Name=vpc-id,Values="$VPC_ID" \
+      --query "Subnets[].{SubnetId:SubnetId,Az:AvailabilityZone,Cidr:CidrBlock,MapPublic:MapPublicIpOnLaunch}" \
+      --output table
+
+Pick 2 subnets (prefer different AZs). Store them:
+
+    export SUBNET1="$(aws ec2 describe-subnets --filters Name=vpc-id,Values="$VPC_ID" \
+      --query "Subnets[0].SubnetId" --output text)"
+    export SUBNET2="$(aws ec2 describe-subnets --filters Name=vpc-id,Values="$VPC_ID" \
+      --query "Subnets[1].SubnetId" --output text)"
+    
+    echo "$SUBNET1 $SUBNET2"
+
+2) Create Security Groups
+2A) Lambda SG
+
+    #Chewbacca: Lambda needs a collar. Not for control — for routing.
+    export LAMBDA_SG_ID="$(aws ec2 create-security-group \
+      --group-name "$LAMBDA_SG_NAME" \
+      --description "Lambda SG for Lab 11A" \
+      --vpc-id "$VPC_ID" \
+      --query "GroupId" --output text)"
+    
+    echo "LAMBDA_SG_ID=$LAMBDA_SG_ID"
+
+2B) RDS SG
+
+    #Chewbacca: The database is the Millennium Falcon. Only trusted crew allowed.
+    export RDS_SG_ID="$(aws ec2 create-security-group \
+      --group-name "$RDS_SG_NAME" \
+      --description "RDS SG for Lab 11A" \
+      --vpc-id "$VPC_ID" \
+      --query "GroupId" --output text)"
+    
+    echo "RDS_SG_ID=$RDS_SG_ID"
+
+Allow MySQL ONLY from Lambda SG:
+
+    #Chewbacca: 3306 opens only for friends. Everyone else gets growled at and then violently humped.
+    aws ec2 authorize-security-group-ingress \
+      --group-id "$RDS_SG_ID" \
+      --ip-permissions "IpProtocol=tcp,FromPort=3306,ToPort=3306,UserIdGroupPairs=[{GroupId=$LAMBDA_SG_ID}]"
+
+Proof:
+
+    aws ec2 describe-security-groups --group-ids "$RDS_SG_ID" \
+      --query "SecurityGroups[0].IpPermissions" --output json
+
+One-command “world-open?” check:
+
+    #Chewbacca: If this prints FAIL, the Wookiee is disappointed.
+    aws ec2 describe-security-groups --group-ids "$RDS_SG_ID" \
+      --query "SecurityGroups[0].IpPermissions[?FromPort==\`3306\` && ToPort==\`3306\`].IpRanges[].CidrIp" \
+      --output text | grep -Eq '0\.0\.0\.0/0' && echo FAIL || echo PASS
+
+3) Create RDS MySQL
+
+Note: In default VPC you can still make RDS private (PubliclyAccessible=false). Do that.
+Create DB subnet group (using two subnets):
+
+    #Chewbacca: “Subnet group” = Falcon docking permissions.
+    aws rds create-db-subnet-group \
+      --db-subnet-group-name "chewbacca-dbsubnet-11a" \
+      --db-subnet-group-description "Lab 11A subnet group" \
+      --subnet-ids "$SUBNET1" "$SUBNET2"
+
+Create DB:
+
+    #Chewbacca: This is where student tears are stored.
+    aws rds create-db-instance \
+      --db-instance-identifier "$DB_ID" \
+      --engine mysql \
+      --db-instance-class db.t3.micro \
+      --allocated-storage 20 \
+      --master-username "$DB_USER" \
+      --master-user-password "TEMPORARY_PASSWORD_LIZZO_LUVS_YOU" \
+      --vpc-security-group-ids "$RDS_SG_ID" \
+      --db-subnet-group-name "chewbacca-dbsubnet-11a" \
+      --backup-retention-period 0 \
+      --no-publicly-accessible \
+      --region "$AWS_REGION"
+
+Wait until available:
+
+    aws rds wait db-instance-available --db-instance-identifier "$DB_ID" --region "$AWS_REGION"
+    echo "RDS is available."
+
+Get endpoint:
+
+    export DB_ENDPOINT="$(aws rds describe-db-instances \
+      --db-instance-identifier "$DB_ID" \
+      --query "DBInstances[0].Endpoint.Address" --output text)"
+    
+    echo "DB_ENDPOINT=$DB_ENDPOINT"
+
+Verify it’s private:
+
+#Chewbacca: “PubliclyAccessible: False” or the Wookiee rips your arm off.
+aws rds describe-db-instances --db-instance-identifier "$DB_ID" \
+  --query "DBInstances[0].PubliclyAccessible" --output text
+
+4) Create database + table (one-time)
+You need a MySQL client from somewhere that can reach the DB. For Lab 11A, easiest is:
+    CloudShell (if it can reach, depends on networking) or
+    a temporary EC2 in the VPC or
+    your own bastion/VPN setup
+
+Once connected:
+
+    CREATE DATABASE lab11;
+    USE lab11;
+    
+    CREATE TABLE audit_events (
+      id VARCHAR(36) PRIMARY KEY,
+      ts_utc VARCHAR(30) NOT NULL,
+      actor VARCHAR(100) NOT NULL,
+      action VARCHAR(50) NOT NULL,
+      resource VARCHAR(200) NOT NULL,
+      note VARCHAR(500),
+      source_ip VARCHAR(60),
+      request_id VARCHAR(100)
+    );
+
+5) Create Secrets Manager secret for DB creds
+Generate a strong password:
+
+    #Chewbacca: strong passwords make Sith cry.
+    export DB_PASS="$(aws secretsmanager get-random-password \
+      --password-length 24 \
+      --exclude-punctuation \
+      --query RandomPassword --output text)"
+
+Create secret JSON:
+
+#Chewbacca: Secrets live in Secrets Manager. Not in Terraform comments. Not in Git. Not in your brain.
+cat > db_secret.json <<EOF
+    {
+      "username": "$DB_USER",
+      "password": "$DB_PASS",
+      "host": "$DB_ENDPOINT",
+      "port": 3306,
+      "dbname": "$DB_NAME"
+    }
+    EOF
+
+Create secret:
+
+    export SECRET_ARN="$(aws secretsmanager create-secret \
+      --name "$SECRET_NAME" \
+      --secret-string file://db_secret.json \
+      --query ARN --output text)"
+    
+    echo "SECRET_ARN=$SECRET_ARN"
+
+
+Verify:
+    aws secretsmanager describe-secret --secret-id "$SECRET_ARN" --output table
+
+6) Create IAM role for Lambda
+Create trust policy:
+
+    cat > lambda_trust.json <<'EOF'
+    {
+      "Version": "2012-10-17",
+      "Statement": [{
+        "Effect": "Allow",
+        "Principal": { "Service": "lambda.amazonaws.com" },
+        "Action": "sts:AssumeRole"
+      }]
+    }
+    EOF
+
+Create role:
+
+    #Chewbacca: Give Lambda the keys it needs, not the whole ship.
+    export LAMBDA_ROLE_NAME="chewbacca-lambda-role-11a"
+    
+    export LAMBDA_ROLE_ARN="$(aws iam create-role \
+      --role-name "$LAMBDA_ROLE_NAME" \
+      --assume-role-policy-document file://lambda_trust.json \
+      --query Role.Arn --output text)"
+    
+    echo "LAMBDA_ROLE_ARN=$LAMBDA_ROLE_ARN"
+
+Attach managed policies for logging + VPC access:
+
+        aws iam attach-role-policy --role-name "$LAMBDA_ROLE_NAME" \
+          --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        
+        aws iam attach-role-policy --role-name "$LAMBDA_ROLE_NAME" \
+          --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+
+Add inline policy to read the secret:
+
+        cat > lambda_secret_policy.json <<EOF
+        {
+          "Version": "2012-10-17",
+          "Statement": [{
+            "Effect": "Allow",
+            "Action": ["secretsmanager:GetSecretValue", "secretsmanager:DescribeSecret"],
+            "Resource": "$SECRET_ARN"
+          }]
+        }
+        EOF
+        
+        aws iam put-role-policy \
+          --role-name "$LAMBDA_ROLE_NAME" \
+          --policy-name "chewbacca-read-secret-11a" \
+          --policy-document file://lambda_secret_policy.json
+        
+
+7) Create Lambda (Python + pymysql)
+7A) Build package
+
+Create folder:
+
+        mkdir -p lambda_pkg
+        cd lambda_pkg
+
+Install pymysql into package:
+
+        #Chewbacca: pymysql is pure Python. SEIR-I mercy granted.
+        pip3 install pymysql -t .
+
+Create lambda_function.py:
+
+https://github.com/BalericaAI/armageddon/blob/main/SEIR_Foundations/lab11/lambda/lambda_function.py
+
+        cat > lambda_function.py <<'EOF'
+
+Zip it:
+
+        zip -r ../chewbacca_lambda_11a.zip . >/dev/null
+        cd ..
+
+7B) Create Lambda function
+
+        aws lambda create-function \
+          --function-name "$LAMBDA_NAME" \
+          --runtime python3.12 \
+          --handler lambda_function.lambda_handler \
+          --zip-file "fileb://chewbacca_lambda_11a.zip" \
+          --role "$LAMBDA_ROLE_ARN" \
+          --timeout 10 \
+          --memory-size 256 \
+          --environment "Variables={DB_SECRET_ARN=$SECRET_ARN,DB_NAME=$DB_NAME,DB_CONNECT_TIMEOUT=5}" \
+          --vpc-config "SubnetIds=$SUBNET1,$SUBNET2,SecurityGroupIds=$LAMBDA_SG_ID" \
+          --region "$AWS_REGION"
+
+Verify config:
+
+    #Chewbacca: If VpcConfig is empty, the Wookiee throws the console at you.
+aws lambda get-function-configuration --function-name "$LAMBDA_NAME" \
+  --query "{Runtime:Runtime,VpcConfig:VpcConfig,Env:Environment.Variables}" --output json
+
+8) Create API Gateway HTTP API + route
+
+Create API:
+
+        export API_ID="$(aws apigatewayv2 create-api \
+          --name "$API_NAME" \
+          --protocol-type HTTP \
+          --query ApiId --output text)"
+        
+        echo "API_ID=$API_ID"
+
+Create integration (Lambda proxy):
+
+        export INTEGRATION_ID="$(aws apigatewayv2 create-integration \
+          --api-id "$API_ID" \
+          --integration-type AWS_PROXY \
+          --integration-uri "arn:aws:lambda:$AWS_REGION:$account_id:function:$LAMBDA_NAME" \
+          --payload-format-version "2.0" \
+          --query IntegrationId --output text)"
+        
+        echo "INTEGRATION_ID=$INTEGRATION_ID"
+
+Create route:
+
+        aws apigatewayv2 create-route \
+          --api-id "$API_ID" \
+          --route-key "POST /intake" \
+          --target "integrations/$INTEGRATION_ID"
+
+Create stage:
+
+        aws apigatewayv2 create-stage --api-id "$API_ID" --stage-name "$STAGE_NAME" --auto-deploy
+
+Allow API Gateway to invoke Lambda:
+
+        #Chewbacca: API Gateway must be allowed to puke on the Wookiee.
+        aws lambda add-permission \
+          --function-name "$LAMBDA_NAME" \
+          --statement-id "apigw-invoke-11a" \
+          --action lambda:InvokeFunction \
+          --principal apigateway.amazonaws.com \
+          --source-arn "arn:aws:execute-api:$AWS_REGION:$account_id:$API_ID/*/*/intake"
+
+Invoke URL:
+
+        export INVOKE_URL="https://${API_ID}.execute-api.${AWS_REGION}.amazonaws.com/${STAGE_NAME}/intake"
+        echo "$INVOKE_URL"
+
+9) Test it (curl) + prove insert
+
+Invoke:
+
+        #Chewbacca: If this returns DB_WRITE_FAILED, your networking is wrong and you win Lizzo. Good. Learn it.
+        curl -sS -X POST "$INVOKE_URL" \
+          -H "content-type: application/json" \
+          -d '{"actor":"doctor.ny","action":"VIEW_PATIENT","resource":"patient/12345","note":"Viewed chart"}'
+
+
+Watch logs:
+        # Chewbacca watching you.... 
+        aws logs tail "/aws/lambda/$LAMBDA_NAME" --since 10m --follow
+
+DB proof (from your MySQL client):
+
+        SELECT * FROM audit_events ORDER BY ts_utc DESC LIMIT 5;
+
+
+
+
+
+
+
+
