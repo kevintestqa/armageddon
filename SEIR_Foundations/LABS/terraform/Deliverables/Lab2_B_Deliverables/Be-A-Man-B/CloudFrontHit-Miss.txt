@@ -1,0 +1,135 @@
+Last login: Wed Feb 25 12:57:37 on ttys007
+kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0    513      0 --:--:-- --:--:-- --:--:--   513
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+date: Wed, 25 Feb 2026 19:03:13 GMT
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+server: Werkzeug/3.1.6 Python/3.9.25
+cache-control: public, max-age=86400, immutable
+x-cache: Miss from cloudfront
+via: 1.1 96c01154d1531e369d3852079162d222.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: gj9wH96J0aAiVph_7PYlIs2IAlwm_T9D_SOlfn5mnuTui4NQzAjRqg==
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0   1548      0 --:--:-- --:--:-- --:--:--  1555
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+date: Wed, 25 Feb 2026 19:03:13 GMT
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+server: Werkzeug/3.1.6 Python/3.9.25
+cache-control: public, max-age=86400, immutable
+x-cache: Hit from cloudfront
+via: 1.1 e1496f86e99bdba0a12fe556d1aa76ba.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: Vry-VsIPVQbJVBkSHbEDmFHZL9DLb2hKBuDZe4MNd9UqL-OsdALcuA==
+age: 11
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0   1118      0 --:--:-- --:--:-- --:--:--  1122
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+date: Wed, 25 Feb 2026 19:03:13 GMT
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+server: Werkzeug/3.1.6 Python/3.9.25
+cache-control: public, max-age=86400, immutable
+x-cache: Hit from cloudfront
+via: 1.1 edcb60d86e24ef8075409b39f666981a.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: ShY-d4B7gTPVuRQm3r1M5WfhYPnDfiq2_pziLMjyRjlaITprIQUPfQ==
+age: 20
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0    618      0 --:--:-- --:--:-- --:--:--   617
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+date: Wed, 25 Feb 2026 19:03:13 GMT
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+server: Werkzeug/3.1.6 Python/3.9.25
+cache-control: public, max-age=86400, immutable
+x-cache: Hit from cloudfront
+via: 1.1 f1a9fd74fe8a5fb434acb2d1e00fe242.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: FK_x8_g39yiZdEtWSv_HCFTuypoOc6noTRpG3HfDOkaz2x6h0kWK-w==
+age: 102
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0    596      0 --:--:-- --:--:-- --:--:--   598
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+server: Werkzeug/3.1.6 Python/3.9.25
+date: Wed, 25 Feb 2026 19:14:36 GMT
+cache-control: public, max-age=86400, immutable
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+x-cache: RefreshHit from cloudfront
+via: 1.1 ed09e2494fde7bb42cb856d277b75d16.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: YkfqKEgmMqP21smeKghsOuHF6Hz82Fp40vXUnZeLrVhmm3VerXK6Bw==
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+kevinwillocks@Kevins-Laptop ~ % 
