@@ -55,7 +55,7 @@ def home():
 def static_index():
     # A simple HTML entrypoint that we can invalidate as “break glass”.
     # Change DEPLOY_VERSION to simulate a new deployment.
-    deploy = os.environ.get("DEPLOY_VERSION", "v1")
+    deploy = os.environ.get("DEPLOY_VERSION", "v2")
     body = f"""<!doctype html>
 <html>
   <head>
@@ -174,7 +174,7 @@ After=network.target
 [Service]
 WorkingDirectory=/opt/rdsapp
 Environment=SECRET_ID=lab1a/rds/mysql
-Environment=DEPLOY_VERSION=v1
+Environment=DEPLOY_VERSION=v2
 ExecStart=/usr/bin/python3 /opt/rdsapp/app.py
 Restart=always
 

@@ -1,0 +1,147 @@
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html
+curl: (28) Failed to connect to pawserenity.click port 443 after 150123 ms: Couldn't connect to server
+kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html
+^C
+kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:--  0:00:10 --:--:--     0^C
+kevinwillocks@Kevins-Laptop ~ % aws cloudfront create-invalidation \
+    --distribution-id E1NDJHX217QYY1 \
+    --paths "/static/index.html"
+{
+    "Location": "https://cloudfront.amazonaws.com/2020-05-31/distribution/E1NDJHX217QYY1/invalidation/I5VZUQ0PQCCJWKWQMY1GH46DKU",
+    "Invalidation": {
+        "Id": "I5VZUQ0PQCCJWKWQMY1GH46DKU",
+        "Status": "InProgress",
+        "CreateTime": "2026-02-28T17:55:30.308000+00:00",
+        "InvalidationBatch": {
+            "Paths": {
+                "Quantity": 1,
+                "Items": [
+                    "/static/index.html"
+                ]
+            },
+            "CallerReference": "cli-1772301329-459223"
+        }
+    }
+}
+kevinwillocks@Kevins-Laptop ~ % aws cloudfront create-invalidation \
+    --distribution-id E1NDJHX217QYY1 \
+    --paths "/static/*"
+{
+    "Location": "https://cloudfront.amazonaws.com/2020-05-31/distribution/E1NDJHX217QYY1/invalidation/I2ABX66MNG2EYROZQ68Q9ZXN8P",
+    "Invalidation": {
+        "Id": "I2ABX66MNG2EYROZQ68Q9ZXN8P",
+        "Status": "InProgress",
+        "CreateTime": "2026-02-28T17:56:12.725000+00:00",
+        "InvalidationBatch": {
+            "Paths": {
+                "Quantity": 1,
+                "Items": [
+                    "/static/*"
+                ]
+            },
+            "CallerReference": "cli-1772301372-612249"
+        }
+    }
+}
+kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:--  0:00:41 --:--:--     0^C
+kevinwillocks@Kevins-Laptop ~ % clear
+
+kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:--  0:02:30 --:--:--     0
+curl: (28) Failed to connect to pawserenity.click port 443 after 150010 ms: Couldn't connect to server
+kevinwillocks@Kevins-Laptop ~ % curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:--  0:00:18 --:--:--     0^C
+kevinwillocks@Kevins-Laptop ~ % curl -i https://www.pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0    897      0 --:--:-- --:--:-- --:--:--   901
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+date: Sat, 28 Feb 2026 18:05:08 GMT
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+server: Werkzeug/3.1.6 Python/3.9.25
+cache-control: public, max-age=10, immutable
+x-cache: Miss from cloudfront
+via: 1.1 a0c7c048bf2fbed3fae77e358e5e67a6.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: 3NKmQXPmJY6WxJ8qT2Sij7YlfNkhaur2vkIBHtGO2wdhjK0uHVVgkA==
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % curl -i https://www.pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0   1383      0 --:--:-- --:--:-- --:--:--  1390
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+date: Sat, 28 Feb 2026 18:05:08 GMT
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+server: Werkzeug/3.1.6 Python/3.9.25
+cache-control: public, max-age=10, immutable
+x-cache: Hit from cloudfront
+via: 1.1 aa607ef1463ae664cd2325eb41bbec6c.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: BzaRLO0U5qxJthmPdmekdWqAWmGwihsCDJHj_4n2Vxk1-Y5UXwrKYA==
+age: 14
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % sleep 6 && curl -i https://pawserenity.click/static/index.html | sed -n '1,30p'
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100   210  100   210    0     0    923      0 --:--:-- --:--:-- --:--:--   921
+HTTP/2 200 
+content-type: text/html; charset=utf-8
+content-length: 210
+server: Werkzeug/3.1.6 Python/3.9.25
+date: Sat, 28 Feb 2026 18:15:43 GMT
+cache-control: public, max-age=10, immutable
+etag: 6b47749d4d82b2ca8b37faf2e5b519da
+x-cache: RefreshHit from cloudfront
+via: 1.1 b808de4f6a1a0f21dd147ffd3d0cdcb2.cloudfront.net (CloudFront)
+x-amz-cf-pop: IAH50-P4
+x-amz-cf-id: zYufqo5BkW8Sm3bZB5ferZ_ur3SuNkEiV2zn7lpRKrF8ftFbO8SR8w==
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Satellite Static Entrypoint</title>
+  </head>
+  <body>
+    <h1>Satellite static index</h1>
+    <p>deploy_version: v1</p>
+  </body>
+</html>%                                                                                                                                                                                                                                                 kevinwillocks@Kevins-Laptop ~ % 
