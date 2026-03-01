@@ -1,4 +1,4 @@
-Lab 2B-Honors++
+Lab 2B-Be A Man C
 CloudFront Validators, RefreshHit, and Conditional Requests
 What this lab teaches (in one sentence)
 

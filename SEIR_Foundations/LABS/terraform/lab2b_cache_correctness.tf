@@ -6,7 +6,7 @@
 resource "aws_cloudfront_cache_policy" "pawserenity_cache_static01" {
   name        = "${var.project_name}-cache-static01"
   comment     = "Aggressive caching for /static/*"
-  default_ttl = 86400    # 1 day
+  default_ttl = 10    # 1 day
   max_ttl     = 31536000 # 1 year
   min_ttl     = 0
 
@@ -58,8 +58,8 @@ resource "aws_cloudfront_cache_policy" "pawserenity_cache_api_disabled01" {
 
     # enable_accept_encoding_gzip   = true
     # enable_accept_encoding_brotli = true
-    enable_accept_encoding_gzip   = false
-    enable_accept_encoding_brotli = false
+    # enable_accept_encoding_gzip   = false
+    # enable_accept_encoding_brotli = false
   }
 }
 
@@ -113,7 +113,7 @@ resource "aws_cloudfront_response_headers_policy" "pawserenity_rsp_static01" {
     items {
       header   = "Cache-Control"
       override = true
-      value    = "public, max-age=86400, immutable"
+      value    = "public, max-age=10, immutable"
     }
   }
 }
