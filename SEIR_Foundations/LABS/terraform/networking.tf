@@ -449,3 +449,52 @@ resource "aws_wafv2_web_acl_association" "satellite_waf_assoc01" {
   resource_arn = aws_lb.satellite_alb01.arn
   web_acl_arn  = aws_wafv2_web_acl.satellite_waf01[0].arn
 }
+
+
+# 1C_Bonus_B (CloudFront) #################################
+# WAFv2 Web ACL for CloudFront (must be CLOUDFRONT scope)
+# NOTE: This is separate from the ALB WAF above (ALB requires REGIONAL).
+############################################
+
+resource "aws_wafv2_web_acl" "satellite_waf_cf01" {
+  count = var.enable_waf ? 1 : 0
+
+  name  = "${var.project_name}-waf-cf01"
+  scope = "CLOUDFRONT"
+
+  default_action {
+    allow {}
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "${var.project_name}-waf-cf01"
+    sampled_requests_enabled   = true
+  }
+
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "${var.project_name}-waf-cf-common"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  tags = {
+    Name = "${var.project_name}-waf-cf01"
+  }
+}

@@ -63,7 +63,13 @@ resource "aws_cloudfront_distribution" "satellite_cf01" {
   }
 
   # Explanation: Attach WAF at the edge — now WAF moved to CloudFront.
-  web_acl_id = aws_wafv2_web_acl.satellite_cf_waf01.arn
+  web_acl_id = var.enable_waf ? aws_wafv2_web_acl.satellite_waf_cf01[0].arn : null
+
+  logging_config {
+    include_cookies = false
+    bucket = aws_s3_bucket.satellite_alb_logs_bucket01.bucket_domain_name
+    prefix = "cloudfront"
+  }
 
   aliases = [
     var.domain_name,

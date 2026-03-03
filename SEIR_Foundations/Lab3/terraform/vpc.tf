@@ -1,4 +1,4 @@
-resource "aws_vpc" "liberdadee_vpc01" {
+resource "aws_vpc" "liberdade_vpc01" {
   cidr_block           = var.liberdade_vpc
   enable_dns_support   = true
   enable_dns_hostnames = true

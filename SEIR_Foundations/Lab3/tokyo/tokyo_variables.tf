@@ -43,27 +43,3 @@ variable "shinjuku_private_cidrs" {
   type        = list(string)
   default     = ["10.30.11.0/24", "10.30.12.0/24"]
 }
-
-variable "asg_minimum_size" {
-  description = "Auto Scaling Group minimum size."
-  type        = number
-  default     = 2
-}
-
-variable "asg_maximum_size" {
-  description = "Auto Scaling Group maximum size."
-  type        = number
-  default     = 5
-}
-
-variable "asg_desired_capacity" {
-  description = "Auto Scaling Group desired capacity."
-  type        = number
-  default     = 3
-}
-
-variable "ec2_instance_type" {
-  description = "EC2 instance size for the app."
-  type        = string
-  default     = "t3.micro"
-}

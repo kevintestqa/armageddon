@@ -1,0 +1,57 @@
+{
+  "schema_version": "2.0",
+  "gate": "lab2_all_gates",
+  "timestamp_utc": "2026-03-03T02:00:43Z",
+  "badge": "YELLOW",
+  "status": "PASS",
+  "exit_code": 0,
+
+  "inputs": {
+    "origin_region": "us-east-1\n",
+    "cloudfront_distribution_id": "E1NDJHX217QYY1\n",
+    "domain_name": "www.pawserenity.click\n",
+    "route53_zone_id": "Z0756527XY5EXU462HMZ\n",
+    "acm_cert_arn": "arn:aws:acm:us-east-1:461593447802:certificate/69731be3-1d7c-450c-bf34-1fafb3810008\n",
+    "waf_web_acl_arn": "arn:aws:wafv2:us-east-1:461593447802:global/webacl/satellite-waf-cf01/fc6d7cca-f214-4117-aad9-903b0a3da5bd\n",
+    "log_bucket": "satellite-alb-logs-bucket01\n",
+    "origin_sg_id": "sg-0e29a282ce7b392f7\n",
+    "app_ports": "443,80\n"
+  },
+
+  "observed": {
+    "caller_arn": "arn:aws:iam::461593447802:user/Cloud\n",
+    "cloudfront_domain": "d1vj1sb7iuwnf9.cloudfront.net\n",
+    "cloudfront_web_acl_id": "arn:aws:wafv2:us-east-1:461593447802:global/webacl/satellite-waf-cf01/fc6d7cca-f214-4117-aad9-903b0a3da5bd\n",
+    "cloudfront_status": "Deployed\n",
+    "cloudfront_enabled": "True\n",
+    "cloudfront_aliases": "www.pawserenity.click,pawserenity.click",
+    "viewer_cert_source": "acm\n",
+    "viewer_acm_arn": "arn:aws:acm:us-east-1:461593447802:certificate/69731be3-1d7c-450c-bf34-1fafb3810008\n",
+    "minimum_tls": "TLSv1.2_2021\n",
+    "logging_bucket": "satellite-alb-logs-bucket01.s3.amazonaws.com\n",
+    "cache_policy_id": "35679bbe-d70a-4b06-8b5f-759d98c8d6e4\n"
+  },
+
+  "rollup": {
+    "details": ["PASS: AWS credentials OK (caller=arn:aws:iam::461593447802:user/Cloud).","PASS: CloudFront distribution retrieved (ID=E1NDJHX217QYY1).","PASS: CloudFront Enabled=True.","PASS: CloudFront Status=Deployed.","PASS: CloudFront aliases include domain (www.pawserenity.click).","PASS: CloudFront uses ACM certificate (ACM ARN present).","PASS: Minimum TLS includes TLSv1.2 (MinimumProtocolVersion=TLSv1.2_2021).","PASS: ACM certificate is ISSUED (us-east-1).","PASS: ACM cert covers domain (www.pawserenity.click).","PASS: WAF WebACL is associated with CloudFront distribution (arn:aws:wafv2:us-east-1:461593447802:global/webacl/satellite-waf-cf01/fc6d7cca-f214-4117-aad9-903b0a3da5bd).","PASS: WAF contains managed rule group(s) (count=1).","PASS: Route53 record sets retrieved (zone=Z0756527XY5EXU462HMZ).","PASS: Route53 A alias points to CloudFront (d1vj1sb7iuwnf9.cloudfront.net).","PASS: Route53 A alias HostedZoneId is CloudFront (Z2FDTNDATAQYW2).","PASS: Route53 AAAA alias points to CloudFront (d1vj1sb7iuwnf9.cloudfront.net).","PASS: Route53 AAAA alias HostedZoneId is CloudFront (Z2FDTNDATAQYW2).","PASS: CloudFront logging appears enabled (bucket=satellite-alb-logs-bucket01.s3.amazonaws.com).","PASS: CloudFront logs bucket matches expected (satellite-alb-logs-bucket01).","PASS: Log bucket exists (satellite-alb-logs-bucket01).","PASS: Log bucket has PublicAccessBlock configuration.","PASS: Origin SG exists (sg-0e29a282ce7b392f7).","PASS: Origin SG sg-0e29a282ce7b392f7 is not world-open on port 443.","PASS: Origin SG sg-0e29a282ce7b392f7 is not world-open on port 80.","PASS: DefaultCacheBehavior uses CachePolicyId (modern caching config)."],
+    "warnings": ["WARN: Origin SG sg-0e29a282ce7b392f7 has no visible sources on port 443 (check prefix lists / LB SG chaining).","WARN: Origin SG sg-0e29a282ce7b392f7 has no visible sources on port 80 (check prefix lists / LB SG chaining)."],
+    "failures": []
+  },
+
+  "clocks": {
+    "first_seen_utc": "\n",
+    "last_seen_utc": "2026-03-03T02:00:09Z\n"
+  },
+  "sla": {
+    "target_hours": 24,
+    "due_utc": "\n",
+    "breached": false,
+    "age_seconds": "\n",
+    "remaining_seconds": "\n"
+  },
+
+  "artifacts": {
+    "badge_txt": "badge.txt\n",
+    "pr_comment_md": "pr_comment.md\n"
+  }
+}

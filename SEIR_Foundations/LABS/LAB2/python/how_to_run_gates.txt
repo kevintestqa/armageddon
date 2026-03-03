@@ -5,7 +5,7 @@ CF_DISTRIBUTION_ID=E1NDJHX217QYY1 \
 DOMAIN_NAME=www.pawserenity.click \
 ROUTE53_ZONE_ID=Z0756527XY5EXU462HMZ \
 ACM_CERT_ARN=arn:aws:acm:us-east-1:461593447802:certificate/69731be3-1d7c-450c-bf34-1fafb3810008 \
-WAF_WEB_ACL_ARN=arn:aws:wafv2:us-east-1:461593447802:regional/webacl/satellite-waf01/cb062eee-61e4-4aeb-9eb2-fc8554260139 \
+WAF_WEB_ACL_ARN=arn:aws:wafv2:us-east-1:461593447802:global/webacl/satellite-waf-cf01/fc6d7cca-f214-4117-aad9-903b0a3da5bd \
 LOG_BUCKET=satellite-alb-logs-bucket01 \
 ORIGIN_SG_ID=sg-0e29a282ce7b392f7 \
 ./run_all_gates.sh

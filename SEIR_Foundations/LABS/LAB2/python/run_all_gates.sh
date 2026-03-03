@@ -73,17 +73,33 @@ now_utc() { date -u +"%Y-%m-%dT%H:%M:%SZ"; }
 have_cmd() { command -v "$1" >/dev/null 2>&1; }
 mkdirp() { mkdir -p "$1" >/dev/null 2>&1 || true; }
 
+# Normalize DNS names for reliable comparisons (Route53 often returns FQDNs with a trailing dot).
+# Examples:
+#   d111111abcdef8.cloudfront.net.  -> d111111abcdef8.cloudfront.net
+#   Example.COM.                    -> example.com
+norm_dns() {
+  local s="${1:-}"
+  # trim whitespace, lowercase, strip ALL trailing dots
+  s="$(echo "$s" | tr -d '\r' | xargs | tr '[:upper:]' '[:lower:]')"
+  while [[ "$s" == *"." ]]; do s="${s%.}"; done
+  echo "$s"
+}
+
+# json_escape() {
+#   sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e ':a;N;$!ba;s/\n/\\n/g'
+# }
 json_escape() {
-  sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' -e ':a;N;$!ba;s/\n/\\n/g'
+  # Portable JSON string escaping for macOS (BSD) and Linux.
+  python3 -c 'import sys, json; s=sys.stdin.read(); print(json.dumps(s)[1:-1], end="")'
 }
 
 iso_to_epoch() { date -u -d "$1" +%s 2>/dev/null || echo ""; }
 epoch_to_iso() { date -u -d "@$1" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo ""; }
 
-# Arrays for roll-up
-details=()
-warnings=()
-failures=()
+# Arrays for roll-up (declare explicitly so set -u never treats them as unbound)
+declare -a details=()
+declare -a warnings=()
+declare -a failures=()
 
 add_detail() { details+=("$1"); }
 add_warning() { warnings+=("$1"); }
@@ -165,8 +181,24 @@ cf_status="$(aws cloudfront get-distribution --id "$CF_DISTRIBUTION_ID" \
   --query "Distribution.Status" --output text 2>/dev/null || echo "Unknown")"
 cf_domain="$(aws cloudfront get-distribution --id "$CF_DISTRIBUTION_ID" \
   --query "Distribution.DomainName" --output text 2>/dev/null || echo "")"
+cf_domain="$(norm_dns "$cf_domain")"
+
+# CloudFront aliases (Alternate domain names). Some AWS CLI calls return "None" for empty.
+# Also, some environments prefer get-distribution-config query paths.
 cf_aliases="$(aws cloudfront get-distribution --id "$CF_DISTRIBUTION_ID" \
   --query "Distribution.DistributionConfig.Aliases.Items" --output text 2>/dev/null || echo "")"
+
+# Fallback if empty/None
+if [[ -z "$cf_aliases" || "$cf_aliases" == "None" ]]; then
+  cf_aliases="$(aws cloudfront get-distribution-config --id "$CF_DISTRIBUTION_ID" \
+    --query "DistributionConfig.Aliases.Items" --output text 2>/dev/null || echo "")"
+fi
+
+# Normalize CLI sentinel
+if [[ "$cf_aliases" == "None" ]]; then cf_aliases=""; fi
+
+# Normalize aliases for comparisons/output (one per line)
+cf_aliases_norm="$(echo "$cf_aliases" | tr '\t' '\n' | while read -r a; do norm_dns "$a"; done | sed '/^$/d')"
 
 # Check: enabled + deployed
 if [[ "$cf_enabled" == "True" ]]; then
@@ -181,11 +213,12 @@ else
   add_warning "WARN: CloudFront Status is not Deployed yet (Status=$cf_status)."
 fi
 
-# Check: alias contains domain
-if echo "$cf_aliases" | tr '\t' '\n' | grep -qi "^${DOMAIN_NAME}$"; then
+# Check: alias contains domain (normalize because AWS may render FQDNs with trailing dot)
+expected_alias="$(norm_dns "$DOMAIN_NAME")"
+if echo "$cf_aliases_norm" | grep -qi "^${expected_alias}$"; then
   add_detail "PASS: CloudFront aliases include domain ($DOMAIN_NAME)."
 else
-  add_failure "FAIL: CloudFront aliases do NOT include domain ($DOMAIN_NAME)."
+  add_failure "FAIL: CloudFront aliases do NOT include domain ($DOMAIN_NAME). Observed aliases: ${cf_aliases_norm:-<empty>}"
 fi
 
 # Check: ViewerCertificate / ACM
@@ -240,39 +273,46 @@ else
 fi
 
 # ---------- WAF association check ----------
-# CloudFront WAFv2 resource ARN format:
-# arn:aws:cloudfront::<account-id>:distribution/<distribution-id>
-account_id="$(aws sts get-caller-identity --query Account --output text 2>/dev/null || echo "")"
-cf_resource_arn=""
-if [[ -n "$account_id" ]]; then
-  cf_resource_arn="arn:aws:cloudfront::${account_id}:distribution/${CF_DISTRIBUTION_ID}"
-fi
+# CloudFront exposes the WAFv2 association directly as DistributionConfig.WebACLId.
+# This is the most reliable check (avoids confusion with REGIONAL WAFs for ALB/API Gateway).
+
+cf_web_acl_id="$(aws cloudfront get-distribution --id "$CF_DISTRIBUTION_ID" \
+  --query "Distribution.DistributionConfig.WebACLId" --output text 2>/dev/null || echo "")"
+
+# Normalize CLI sentinel
+if [[ "$cf_web_acl_id" == "None" ]]; then cf_web_acl_id=""; fi
+
+# Normalize formatting
+cf_web_acl_id="$(echo "$cf_web_acl_id" | tr -d '\r' | xargs)"
 
 if [[ "$REQUIRE_WAF_ASSOCIATION" == "true" ]]; then
-  if [[ -n "$cf_resource_arn" ]]; then
-    waf_assoc_arn="$(aws wafv2 get-web-acl-for-resource --resource-arn "$cf_resource_arn" --region "$CF_ACM_REGION" \
-      --query "WebACL.ARN" --output text 2>/dev/null || echo "")"
-    if [[ -n "$waf_assoc_arn" && "$waf_assoc_arn" != "None" ]]; then
-      add_detail "PASS: WAF WebACL is associated with CloudFront."
-      if [[ -n "$WAF_WEB_ACL_ARN" && "$waf_assoc_arn" != "$WAF_WEB_ACL_ARN" ]]; then
-        add_warning "WARN: Associated WebACL ARN differs from WAF_WEB_ACL_ARN input (expected=$WAF_WEB_ACL_ARN, actual=$waf_assoc_arn)."
-      fi
+  if [[ -n "$cf_web_acl_id" ]]; then
+    add_detail "PASS: WAF WebACL is associated with CloudFront distribution ($cf_web_acl_id)."
 
-      # Warn if no managed rule groups detected
-      managed_count="$(aws wafv2 get-web-acl --id "$(echo "$waf_assoc_arn" | awk -F/ '{print $NF}')" \
-        --name "$(aws wafv2 get-web-acl-for-resource --resource-arn "$cf_resource_arn" --region "$CF_ACM_REGION" --query "WebACL.Name" --output text 2>/dev/null || echo "")" \
+    # If the caller provided an expected WAF ARN, compare for drift (warn only)
+    if [[ -n "$WAF_WEB_ACL_ARN" && "$cf_web_acl_id" != "$WAF_WEB_ACL_ARN" ]]; then
+      add_warning "WARN: CloudFront WebACLId differs from WAF_WEB_ACL_ARN input (expected=$WAF_WEB_ACL_ARN, actual=$cf_web_acl_id)."
+    fi
+
+    # Best-effort: detect managed rule groups on the associated WebACL
+    waf_name="$(echo "$cf_web_acl_id" | awk -F/ '{print $(NF-1)}')"
+    waf_id="$(echo "$cf_web_acl_id" | awk -F/ '{print $NF}')"
+
+    if [[ -n "$waf_name" && -n "$waf_id" ]]; then
+      managed_count="$(aws wafv2 get-web-acl --name "$waf_name" --id "$waf_id" \
         --scope CLOUDFRONT --region "$CF_ACM_REGION" \
         --query "length(WebACL.Rules[?Statement.ManagedRuleGroupStatement!=null])" --output text 2>/dev/null || echo "0")"
+
       if [[ "$managed_count" != "0" ]]; then
         add_detail "PASS: WAF contains managed rule group(s) (count=$managed_count)."
       else
         add_warning "WARN: WAF has no managed rule groups detected (consider AWSManagedRules* baseline)."
       fi
     else
-      add_failure "FAIL: No WAF WebACL associated with CloudFront distribution."
+      add_warning "WARN: Could not parse WAF name/id from WebACLId for rule inspection."
     fi
   else
-    add_failure "FAIL: Could not build CloudFront resource ARN for WAF association check."
+    add_failure "FAIL: No WAF WebACL associated with CloudFront distribution."
   fi
 else
   add_detail "INFO: WAF association requirement disabled (REQUIRE_WAF_ASSOCIATION=false)."
@@ -291,7 +331,7 @@ fi
 check_alias_record() {
   local type="$1"
   local name_fqdn="${DOMAIN_NAME}."
-  local target="$cf_domain"
+  local target="$(norm_dns "$cf_domain")"
 
   # record may be root or with trailing dot
   local found_target
@@ -309,8 +349,8 @@ check_alias_record() {
     return
   fi
 
-  # Route53 returns targets with trailing dot
-  if echo "$found_target" | tr '\t' '\n' | grep -qi "^${target}\.?$"; then
+  # Route53 returns targets with trailing dot; normalize both sides to avoid false failures
+  if echo "$found_target" | tr '\t' '\n' | while read -r t; do norm_dns "$t"; done | grep -qi "^${target}$"; then
     add_detail "PASS: Route53 $type alias points to CloudFront ($target)."
   else
     add_failure "FAIL: Route53 $type alias does not point to CloudFront (expected=$target, actual=$found_target)."
@@ -329,6 +369,7 @@ check_alias_record "AAAA"
 # ---------- CloudFront logging checks ----------
 logging_bucket="$(aws cloudfront get-distribution --id "$CF_DISTRIBUTION_ID" \
   --query "Distribution.DistributionConfig.Logging.Bucket" --output text 2>/dev/null || echo "")"
+logging_bucket="$(norm_dns "$logging_bucket")"
 logging_enabled="false"
 if [[ -n "$logging_bucket" && "$logging_bucket" != "None" ]]; then
   logging_enabled="true"
@@ -345,7 +386,7 @@ if [[ -n "$LOG_BUCKET" ]]; then
   # CloudFront stores bucket as "bucket-name.s3.amazonaws.com"
   expected_cf_bucket="${LOG_BUCKET}.s3.amazonaws.com"
   if [[ "$logging_enabled" == "true" ]]; then
-    if echo "$logging_bucket" | grep -qi "^${expected_cf_bucket}\.?$"; then
+    if [[ "$(norm_dns "$logging_bucket")" == "$(norm_dns "$expected_cf_bucket")" ]]; then
       add_detail "PASS: CloudFront logs bucket matches expected ($LOG_BUCKET)."
     else
       add_warning "WARN: CloudFront logs bucket differs (expected=$expected_cf_bucket, actual=$logging_bucket)."
@@ -478,12 +519,28 @@ fi
 # Build JSON arrays safely (no jq required)
 make_json_array() {
   if (( $# == 0 )); then echo "[]"; return; fi
-  printf '%s\n' "$@" | json_escape | awk 'BEGIN{print "["} {printf "%s\"%s\"", (NR>1?",":""), $0} END{print "]"}'
+  printf '['
+  local first=true
+  local item
+  for item in "$@"; do
+    if [[ "$first" == true ]]; then first=false; else printf ','; fi
+    printf '"%s"' "$(printf '%s' "$item" | json_escape)"
+  done
+  printf ']'
 }
 
+# Guard against `set -u` in case arrays are unset for any reason (e.g., different shells / earlier unset).
+# If they are already declared, this is a no-op.
+declare -p details  >/dev/null 2>&1 || declare -a details=()
+declare -p warnings >/dev/null 2>&1 || declare -a warnings=()
+declare -p failures >/dev/null 2>&1 || declare -a failures=()
+
+# Temporarily disable nounset while expanding empty arrays (prevents `unbound variable` on some bash versions)
+set +u
 details_json="$(make_json_array "${details[@]}")"
 warnings_json="$(make_json_array "${warnings[@]}")"
 failures_json="$(make_json_array "${failures[@]}")"
+set -u
 
 # Write combined JSON
 cat > "$OUT_JSON" <<EOF
@@ -509,10 +566,11 @@ cat > "$OUT_JSON" <<EOF
 
   "observed": {
     "caller_arn": "$(echo "$caller_arn" | json_escape)",
-    "cloudfront_domain": "$(echo "$cf_domain" | json_escape)",
+    "cloudfront_domain": "$(echo "$(norm_dns "$cf_domain")" | json_escape)",
+    "cloudfront_web_acl_id": "$(echo "$cf_web_acl_id" | json_escape)",
     "cloudfront_status": "$(echo "$cf_status" | json_escape)",
     "cloudfront_enabled": "$(echo "$cf_enabled" | json_escape)",
-    "cloudfront_aliases": "$(echo "$cf_aliases" | json_escape)",
+    "cloudfront_aliases": "$(echo "$cf_aliases_norm" | tr '\n' ',' | sed 's/,$//' | json_escape)",
     "viewer_cert_source": "$(echo "$viewer_cert_source" | json_escape)",
     "viewer_acm_arn": "$(echo "$viewer_acm_arn" | json_escape)",
     "minimum_tls": "$(echo "$min_tls" | json_escape)",

@@ -60,9 +60,9 @@ resource "aws_route53_record" "pawserenity_apex_alias" {
   type    = "A"
 
   alias {
-    name                   = aws_lb.satellite_alb01.dns_name
-    zone_id                = aws_lb.satellite_alb01.zone_id
-    evaluate_target_health = true
+    name                   = aws_cloudfront_distribution.satellite_cf01.domain_name
+    zone_id                = aws_cloudfront_distribution.satellite_cf01.hosted_zone_id
+    evaluate_target_health = false
   }
 }
 
@@ -72,9 +72,9 @@ resource "aws_route53_record" "pawserenity_www_alias" {
   type    = "A"
 
   alias {
-    name                   = aws_lb.satellite_alb01.dns_name
-    zone_id                = aws_lb.satellite_alb01.zone_id
-    evaluate_target_health = true
+    name                   = aws_cloudfront_distribution.satellite_cf01.domain_name
+    zone_id                = aws_cloudfront_distribution.satellite_cf01.hosted_zone_id
+    evaluate_target_health = false
   }
 }
 
