@@ -67,3 +67,15 @@ variable "ec2_instance_type" {
   type        = string
   default     = "t3.micro"
 }
+
+variable "origin_header_name" {
+  description = "Header name for Sao Paulo environment"
+  type = string
+  default = "X-${liberdade}-verification"
+}
+
+variable "origin_header_value" {
+  description = "Value for Sao Paulo environment"
+  type = string
+  default = "${liberdade}-origin"
+}
