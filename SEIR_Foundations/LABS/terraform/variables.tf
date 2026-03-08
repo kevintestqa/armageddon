@@ -13,19 +13,19 @@ variable "project_name" {
 variable "vpc_cidr" {
   description = "VPC CIDR (use 10.x.x.x/xx as instructed)."
   type        = string
-  default     = "10.20.0.0/16"
+  default     = "10.40.0.0/16"
 }
 
 variable "public_subnet_cidrs" {
   description = "Public subnet CIDRs (use 10.x.x.x/xx)."
   type        = list(string)
-  default     = ["10.20.1.0/24", "10.20.2.0/24"]
+  default     = ["10.40.1.0/24", "10.40.2.0/24"]
 }
 
 variable "private_subnet_cidrs" {
   description = "Private subnet CIDRs (use 10.x.x.x/xx)."
   type        = list(string)
-  default     = ["10.20.11.0/24", "10.20.12.0/24"]
+  default     = ["10.40.11.0/24", "10.40.12.0/24"]
 }
 
 variable "azs" {

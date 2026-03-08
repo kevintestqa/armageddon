@@ -1,0 +1,1 @@
+liberdade_tgw_id = "tgw-031efe265056e3c08"

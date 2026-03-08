@@ -5,6 +5,7 @@ resource "aws_subnet" "shinjuku_private_subnets" {
   cidr_block        = var.shinjuku_private_cidrs[count.index]
   availability_zone = var.shinjuku_az[count.index]
   map_public_ip_on_launch = false
+  provider = aws.tokyo
 
   tags = {
     Name = "${local.shinjuku}-private-subnet0${count.index + 1}"
@@ -17,6 +18,7 @@ resource "aws_subnet" "shinjuku_public_subnets" {
   cidr_block              = var.shinjuku_public_cidrs[count.index]
   availability_zone       = var.shinjuku_az[count.index]
   map_public_ip_on_launch = false
+  provider = aws.tokyo
 
   tags = {
     Name = "${local.shinjuku}-public-subnet0${count.index + 1}"

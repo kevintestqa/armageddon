@@ -8,7 +8,7 @@ variable "liberdade" {
   default = "liberdade"
 }
 
-variable "liberdade_az" {
+variable "liberdade_region" {
   description = "saopaulo"
   type        = string
   default     = "sa-east-1"
@@ -70,12 +70,24 @@ variable "ec2_instance_type" {
 
 variable "origin_header_name" {
   description = "Header name for Sao Paulo environment"
-  type = string
-  default = "X-${liberdade}-verification"
+  type        = string
+  default     = "X-liberdade-verification"
 }
 
 variable "origin_header_value" {
   description = "Value for Sao Paulo environment"
-  type = string
-  default = "${liberdade}-origin"
+  type        = string
+  default     = "liberdade-origin"
+}
+
+variable "ec2_ami_id" {
+  description = "AMI ID for the EC2 app host."
+  type        = string
+  default     = "ami-025f404fafb21297b"
+}
+
+variable "liberdade_azs" {
+  description = "Availability Zones list (match count with subnets)."
+  type        = list(string)
+  default     = ["sa-east-1a", "sa-east-1b"]
 }

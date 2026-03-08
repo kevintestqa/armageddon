@@ -1,6 +1,7 @@
 locals {
   ports_http     = 80
   ports_https    = 443
+  db_port        = 3306
   tcp_protocol   = "tcp"
   all_ip_address = "0.0.0.0/0"
   all_ports      = 0
@@ -12,10 +13,11 @@ resource "aws_cloudfront_distribution" "liberdade_cf01" {
   is_ipv6_enabled     = true
   comment             = "Liberdade CloudFront distribution"
   default_root_object = ""
+  provider            = aws.us_east_virginia
 
   origin {
     domain_name = aws_lb.liberdade_alb01.dns_name
-    origin_id   = "${vars.liberdade}-alb-origin"
+    origin_id   = "${var.liberdade}-alb-origin"
 
     custom_origin_config {
       http_port              = local.ports_http
@@ -33,7 +35,7 @@ resource "aws_cloudfront_distribution" "liberdade_cf01" {
   default_cache_behavior {
     allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
     cached_methods   = ["GET", "HEAD", "OPTIONS"]
-    target_origin_id = "${vars.liberdade}-alb-origin"
+    target_origin_id = "${var.liberdade}-alb-origin"
 
     forwarded_values {
       query_string = true
@@ -60,6 +62,6 @@ resource "aws_cloudfront_distribution" "liberdade_cf01" {
   }
 
   tags = {
-    Name = "${vars.liberdade}-cf01"
+    Name = "${var.liberdade}-cf01"
   }
 }

@@ -1,14 +1,18 @@
 variable "shinjuku_az" {
   description = "Tokyo"
-  type        = string
-  default     = "ap-northeast-1"
+  type        = list(string)
+  default     = ["ap-northeast-1a", "ap-northeast-1c"]
 }
 
 variable "liberdade" {
   default = "liberdade"
 }
 
-variable "liberdade_az" {
+variable "shinjuku" {
+  default = "shinjuku"
+}
+
+variable "liberdade_region" {
   description = "saopaulo"
   type        = string
   default     = "sa-east-1"
@@ -85,4 +89,32 @@ variable "storage_type" {
   description = "RDS storage type (gp3 recommended)."
   type        = string
   default     = "gp3"
+}
+
+variable "alb_5xx_threshold" {
+  description = "Alarm threshold for ALB 5xx count."
+  type        = number
+  default     = 10
+}
+
+variable "alb_5xx_period_seconds" {
+  description = "CloudWatch alarm period."
+  type        = number
+  default     = 300
+}
+
+variable "alb_5xx_evaluation_periods" {
+  description = "Evaluation periods for alarm."
+  type        = number
+  default     = 1
+}
+
+variable "sns_email_endpoint" {
+  description = "Email for SNS subscription (PagerDuty simulation)."
+  type        = string
+  default     = "kevinwillocks@gmail.com"
+}
+
+variable "liberdade_tgw_id" {
+  type = string
 }
