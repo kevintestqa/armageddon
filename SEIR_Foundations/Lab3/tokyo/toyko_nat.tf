@@ -1,5 +1,5 @@
 resource "aws_eip" "shinjuku_nat_eip01" {
-  domain = "vpc"
+  domain   = "vpc"
   provider = aws.tokyo
 
   tags = {
@@ -10,7 +10,7 @@ resource "aws_eip" "shinjuku_nat_eip01" {
 resource "aws_nat_gateway" "shinjuku_nat01" {
   allocation_id = aws_eip.shinjuku_nat_eip01.id
   subnet_id     = aws_subnet.shinjuku_public_subnets[0].id # NAT in a public subnet
-  provider = aws.tokyo
+  provider      = aws.tokyo
 
   tags = {
     Name = "${local.shinjuku}-nat01"

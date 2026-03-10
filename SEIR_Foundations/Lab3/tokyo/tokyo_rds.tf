@@ -4,7 +4,7 @@ resource "aws_db_instance" "shinjuku_rds01" {
   instance_class           = var.db_instance_class
   storage_type             = var.storage_type
   allocated_storage        = 20
-  backup_retention_period  = 0 
+  backup_retention_period  = 0
   db_name                  = var.db_name
   username                 = var.db_username
   password                 = var.db_password
@@ -16,9 +16,7 @@ resource "aws_db_instance" "shinjuku_rds01" {
 
   publicly_accessible = false
   skip_final_snapshot = true
-  provider = aws.tokyo
-
-  # student sets multi_az / backups / monitoring as stretch goals
+  provider            = aws.tokyo
 
   tags = {
     Name = "${local.shinjuku}-rds01"
@@ -30,7 +28,7 @@ resource "aws_db_instance" "shinjuku_rds01" {
 resource "aws_db_subnet_group" "shinjuku_rds_subnet_group01" {
   name       = "${local.shinjuku}-rds-subnet-group01"
   subnet_ids = aws_subnet.shinjuku_private_subnets[*].id
-  provider = aws.tokyo
+  provider   = aws.tokyo
 
   tags = {
     Name = "${local.shinjuku}-rds-subnet-group01"

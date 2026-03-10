@@ -91,3 +91,7 @@ variable "liberdade_azs" {
   type        = list(string)
   default     = ["sa-east-1a", "sa-east-1b"]
 }
+
+variable "shinjuku_peer_attachment_id" {
+  type = string
+}

@@ -6,7 +6,7 @@
 resource "aws_cloudwatch_log_group" "shinjuku_log_group01" {
   name              = "/aws/ec2/${local.shinjuku}-rds-app"
   retention_in_days = 7
-  provider = aws.tokyo
+  provider          = aws.tokyo
 
   tags = {
     Name = "${local.shinjuku}-log-group01"
@@ -28,7 +28,7 @@ resource "aws_cloudwatch_metric_alarm" "shinjuku_db_alarm01" {
   period              = 300
   statistic           = "Sum"
   threshold           = 3
-  provider = aws.tokyo
+  provider            = aws.tokyo
 
   alarm_actions = [aws_sns_topic.shinjuku_sns_topic01.arn]
 
@@ -49,7 +49,7 @@ resource "aws_cloudwatch_metric_alarm" "shinjuku_alb_5xx_alarm01" {
   threshold           = var.alb_5xx_threshold
   period              = var.alb_5xx_period_seconds
   statistic           = "Sum"
-  provider = aws.tokyo
+  provider            = aws.tokyo
 
   namespace   = "AWS/ApplicationELB"
   metric_name = "HTTPCode_ELB_5XX_Count"

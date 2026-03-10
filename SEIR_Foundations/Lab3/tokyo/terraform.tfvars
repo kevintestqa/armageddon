@@ -1,1 +1,1 @@
-liberdade_tgw_id = "tgw-031efe265056e3c08"
+liberdade_tgw_id = "tgw-0d8ef4395489a02ce"

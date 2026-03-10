@@ -1,5 +1,5 @@
 resource "aws_sns_topic" "shinjuku_sns_topic01" {
-  name = "${var.shinjuku}-db-incidents"
+  name     = "${var.shinjuku}-db-incidents"
   provider = aws.tokyo
 }
 
@@ -8,5 +8,5 @@ resource "aws_sns_topic_subscription" "shinjuku_sns_sub01" {
   topic_arn = aws_sns_topic.shinjuku_sns_topic01.arn
   protocol  = "email"
   endpoint  = var.sns_email_endpoint
-  provider = aws.tokyo
+  provider  = aws.tokyo
 }

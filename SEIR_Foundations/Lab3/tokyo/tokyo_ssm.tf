@@ -45,13 +45,13 @@ resource "aws_ssm_parameter" "shinjuku_db_name" {
 resource "aws_secretsmanager_secret" "shinjuku_rds01_db_secret01" {
   name                    = "lab3a/rds/mysql"
   recovery_window_in_days = 0
-  provider = aws.tokyo
+  provider                = aws.tokyo
 }
 
 # Explanation: Secret payload—students should align this structure with their app (and support rotation later).
 resource "aws_secretsmanager_secret_version" "shinjuku_rds01_db_secret_version01" {
   secret_id = aws_secretsmanager_secret.shinjuku_rds01_db_secret01.id
-  provider = aws.tokyo
+  provider  = aws.tokyo
 
   secret_string = jsonencode({
     username = var.db_username
