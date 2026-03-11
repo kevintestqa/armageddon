@@ -59,7 +59,7 @@ resource "aws_iam_policy" "liberdade_secrets_policy" {
         "Action" : [
           "secretsmanager:GetSecretValue"
         ],
-        "Resource" : "arn:aws:secretsmanager:sa-east-1:461593447802:secret:${local.liberdade_prefix}/rds/mysql*"
+        "Resource" : "arn:aws:secretsmanager:sa-east-1:461593447802:secret:lab3a/rds/mysql*"
       }
     ]
   })
@@ -87,7 +87,7 @@ resource "aws_iam_policy" "liberdade_leastpriv_read_params01" {
           "ssm:GetParametersByPath"
         ]
         Resource = [
-          "arn:aws:ssm:${data.aws_region.liberdade_region01.name}:${data.aws_caller_identity.liberdade_self01.account_id}:parameter/lab/db/*"
+          "arn:aws:ssm:${data.aws_region.liberdade_region01.name}:${data.aws_caller_identity.liberdade_self01.account_id}:parameter/rds/mysql/*"
         ]
       }
     ]

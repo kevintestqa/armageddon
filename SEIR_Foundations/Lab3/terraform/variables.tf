@@ -95,3 +95,26 @@ variable "liberdade_azs" {
 variable "shinjuku_peer_attachment_id" {
   type = string
 }
+
+variable "db_name" {
+  type  = string
+}
+
+variable "db_username" {
+  type = string
+}
+
+variable "db_password" {
+  type = string
+  sensitive = true
+}
+
+variable "shinjuku_rds_endpoint" {
+  description = "Tokyo RDS endpoint passed into the Sao Paulo stack"
+  type        = string
+}
+
+variable "shinjuku_rds_port" {
+  description = "Tokyo RDS port passed into the Sao Paulo stack"
+  type        = number
+}

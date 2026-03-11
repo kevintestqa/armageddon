@@ -16,8 +16,8 @@ from flask import Flask, request, make_response, jsonify
 from flask import Response
 import hashlib
 
-REGION = os.environ.get("AWS_REGION", "us-east-1")
-SECRET_ID = os.environ.get("SECRET_ID", "lab1a/rds/mysql")
+REGION = os.environ.get("AWS_REGION", "sa-east-1")
+SECRET_ID = os.environ.get("SECRET_ID", "lab3a/rds/mysql")
 DB_NAME = "labdb"
 
 secrets = boto3.client("secretsmanager", region_name=REGION)
@@ -123,7 +123,7 @@ def init_db():
         """)
         cur.close()
         conn.close()
-        return "Initialized labdb + notes table."
+        return "Initialized shinjuku + notes table."
     except Exception as e:
         traceback.print_exc()
         return f"init failed: {str(e)}" , 500
@@ -173,7 +173,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/opt/rdsapp
-Environment=SECRET_ID=lab1a/rds/mysql
+Environment=SECRET_ID=lab3a/rds/mysql
 Environment=DEPLOY_VERSION=v2
 ExecStart=/usr/bin/python3 /opt/rdsapp/app.py
 Restart=always

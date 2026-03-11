@@ -18,7 +18,7 @@ resource "aws_instance" "liberdade_ec2_01" {
   //depends_on = [aws_db_instance.shinjuku_rds01]
 
   tags = {
-    Name = "${local.liberdade}-ec2_01-public-lab1A"
+    Name = "${local.liberdade}-ec2_01-public-lab3A"
   }
 }
 
