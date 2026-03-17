@@ -118,3 +118,27 @@ variable "sns_email_endpoint" {
 variable "liberdade_tgw_id" {
   type = string
 }
+
+variable "route53_hosted_zone_id" {
+  description = "If manage_route53_in_terraform=false, provide existing Hosted Zone ID for domain."
+  type        = string
+  default     = ""
+}
+
+variable "domain_name" {
+  description = "Base domain students registered (e.g., pawserenity.click)."
+  type        = string
+  default     = "pawserenity.click"
+}
+
+variable "app_subdomain" {
+  description = "App hostname prefix (e.g., www.pawserenity.click)."
+  type        = string
+  default     = "www"
+}
+
+variable "certificate_validation_method" {
+  description = "ACM validation method. Students can do DNS (Route53) or EMAIL."
+  type        = string
+  default     = "DNS"
+}

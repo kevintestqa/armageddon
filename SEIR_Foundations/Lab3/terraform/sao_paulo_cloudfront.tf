@@ -12,8 +12,14 @@ resource "aws_cloudfront_distribution" "liberdade_cf01" {
   enabled             = true
   is_ipv6_enabled     = true
   comment             = "Liberdade CloudFront distribution"
-  default_root_object = ""
-  provider            = aws.us_east_virginia
+
+  logging_config {
+    include_cookies = false
+    bucket          = "chrisbarm-cloudfront-logs-${data.aws_caller_identity.saopaulo_current.account_id}.s3.amazonaws.com"
+    prefix          = "liberdade-cf/"
+  }
+
+  web_acl_id = aws_wafv2_web_acl.liberdade_waf_acl.arn
 
   origin {
     domain_name = aws_lb.liberdade_alb01.dns_name
