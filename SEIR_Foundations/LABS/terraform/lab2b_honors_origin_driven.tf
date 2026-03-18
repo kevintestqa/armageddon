@@ -60,9 +60,3 @@ data "aws_cloudfront_origin_request_policy" "satellite_orp_all_viewer_except_hos
 #   cache_policy_id          = aws_cloudfront_cache_policy.satellite_cache_api_disabled01.id
 #   origin_request_policy_id = aws_cloudfront_origin_request_policy.satellite_orp_api01.id
 # }
-
-
-
-
-
-

@@ -1,0 +1,70 @@
+[
+    {
+        "RouteTableId": "rtb-01462eaecad3cc7e0",
+        "Associations": [
+            "subnet-0046deb31c2bcd7cb",
+            "subnet-0a680506196dd23a9"
+        ],
+        "Routes": [
+            {
+                "DestinationIPv4": "10.20.0.0/16",
+                "DestinationIPv6": null,
+                "GatewayId": null,
+                "TransitGatewayId": "tgw-0fc890baa49c9826f",
+                "NatGatewayId": null,
+                "NetworkInterfaceId": null,
+                "VpcPeeringConnectionId": null,
+                "State": "active",
+                "Origin": "CreateRoute"
+            },
+            {
+                "DestinationIPv4": "10.30.0.0/16",
+                "DestinationIPv6": null,
+                "GatewayId": "local",
+                "TransitGatewayId": null,
+                "NatGatewayId": null,
+                "NetworkInterfaceId": null,
+                "VpcPeeringConnectionId": null,
+                "State": "active",
+                "Origin": "CreateRouteTable"
+            }
+        ]
+    },
+    {
+        "RouteTableId": "rtb-079f1d102774939e5",
+        "Associations": [],
+        "Routes": [
+            {
+                "DestinationIPv4": "10.30.0.0/16",
+                "DestinationIPv6": null,
+                "GatewayId": "local",
+                "TransitGatewayId": null,
+                "NatGatewayId": null,
+                "NetworkInterfaceId": null,
+                "VpcPeeringConnectionId": null,
+                "State": "active",
+                "Origin": "CreateRouteTable"
+            }
+        ]
+    },
+    {
+        "RouteTableId": "rtb-014a3a650ce778a9f",
+        "Associations": [
+            "subnet-0fec9e196bef14dca",
+            "subnet-07fe0cde6e76fcb89"
+        ],
+        "Routes": [
+            {
+                "DestinationIPv4": "10.30.0.0/16",
+                "DestinationIPv6": null,
+                "GatewayId": "local",
+                "TransitGatewayId": null,
+                "NatGatewayId": null,
+                "NetworkInterfaceId": null,
+                "VpcPeeringConnectionId": null,
+                "State": "active",
+                "Origin": "CreateRouteTable"
+            }
+        ]
+    }
+]
