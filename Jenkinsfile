@@ -9,7 +9,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'jenkinsTest' //This needs to be changed before runtime to match Jenkins credentials
+                    credentialsId: 'JenkinsTest' //This needs to be changed before runtime to match Jenkins credentials
                 ]]) {
                     sh '''
                     echo "AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID"
@@ -57,7 +57,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'jenkinsTest'
+                    credentialsId: 'JenkinsTest'
                 ]]) {
                     sh '''
                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
@@ -88,7 +88,7 @@ pipeline {
             steps {
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'jenkinsTest'
+                    credentialsId: 'JenkinsTest'
                 ]]) {
                     sh '''
                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
@@ -103,7 +103,7 @@ pipeline {
                 input message: "Approve Terraform Apply?", ok: "Deploy"
                 withCredentials([[
                     $class: 'AmazonWebServicesCredentialsBinding',
-                    credentialsId: 'jenkinsTest'
+                    credentialsId: 'JenkinsTest'
                 ]]) {
                     sh '''
                     export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
@@ -132,7 +132,7 @@ pipeline {
                     if (destroyChoice == 'yes') {
                         withCredentials([[
                             $class: 'AmazonWebServicesCredentialsBinding',
-                            credentialsId: 'jenkinsTest'
+                            credentialsId: 'JenkinsTest'
                         ]]) {
                             sh 'terraform destroy -auto-approve'
                         }
