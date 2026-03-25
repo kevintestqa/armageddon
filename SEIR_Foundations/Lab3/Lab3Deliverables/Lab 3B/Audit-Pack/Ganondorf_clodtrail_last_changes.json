@@ -1,0 +1,706 @@
+{
+  "tokyo": [
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 20:02:57-05:00",
+      "event": "DescribeDBInstances",
+      "user": "Cloud",
+      "source": "rds.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 20:02:46-05:00",
+      "event": "DescribeDBInstances",
+      "user": "Cloud",
+      "source": "rds.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:56:04-05:00",
+      "event": "GetBucketVersioning",
+      "user": "Cloud",
+      "source": "s3.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:54:13-05:00",
+      "event": "GetBucketOwnershipControls",
+      "user": "Cloud",
+      "source": "s3.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:54:12-05:00",
+      "event": "GetBucketVersioning",
+      "user": "Cloud",
+      "source": "s3.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:51:40-05:00",
+      "event": "GetBucketOwnershipControls",
+      "user": "Cloud",
+      "source": "s3.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:51:39-05:00",
+      "event": "GetBucketVersioning",
+      "user": "Cloud",
+      "source": "s3.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:51:34-05:00",
+      "event": "ListNotificationHubs",
+      "user": "Cloud",
+      "source": "notifications.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:51:33-05:00",
+      "event": "DescribeRegions",
+      "user": "Cloud",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:51:30-05:00",
+      "event": "DescribeRegions",
+      "user": "Cloud",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:51:24-05:00",
+      "event": "Search",
+      "user": "Cloud",
+      "source": "resource-explorer-2.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:49:57-05:00",
+      "event": "DescribeTransitGateways",
+      "user": "Cloud",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:49:57-05:00",
+      "event": "DescribeTransitGatewayAttachments",
+      "user": "Cloud",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:44-05:00",
+      "event": "ListDiscoveredResources",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:44-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:44-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:40-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:40-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:39-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:39-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:31-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:31-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:28-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:28-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:28-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:28-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:21-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:21-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:11-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:11-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:11-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:11-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:04-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:04-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:01-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:01-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:01-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:45:01-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:59-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:59-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:56-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:56-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:55-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:55-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:42-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:42-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:36-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:29-05:00",
+      "event": "DescribeConfigurationRecorders",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:29-05:00",
+      "event": "DescribeConfigurationRecorderStatus",
+      "user": "Cloud",
+      "source": "config.amazonaws.com"
+    },
+    {
+      "region": "ap-northeast-1",
+      "time": "2026-03-24 19:44:28-05:00",
+      "event": "LookupEvents",
+      "user": "Cloud",
+      "source": "cloudtrail.amazonaws.com"
+    }
+  ],
+  "saopaulo": [
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:04:14-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:04:14-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:04:06-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-0191df95a252511af",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:03:50-05:00",
+      "event": "ListInstanceAssociations",
+      "user": "i-09397bd263731ccf7",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:02:57-05:00",
+      "event": "DescribeDBInstances",
+      "user": "Cloud",
+      "source": "rds.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:02:47-05:00",
+      "event": "DescribeDBInstances",
+      "user": "Cloud",
+      "source": "rds.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:02:45-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-02b80bca325a42d53",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:02:13-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:02:13-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:01:38-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-09397bd263731ccf7",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:00:13-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 20:00:13-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:59:59-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-01d80466fe4a0a229",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:59:47-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-076b3670a1522a893",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:59:06-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-0191df95a252511af",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:58:12-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:58:12-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:57:45-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-02b80bca325a42d53",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:56:46-05:00",
+      "event": "ListInstanceAssociations",
+      "user": "i-0191df95a252511af",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:56:38-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-09397bd263731ccf7",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:56:12-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:56:12-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:55:27-05:00",
+      "event": "ListInstanceAssociations",
+      "user": "i-01d80466fe4a0a229",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:55:16-05:00",
+      "event": "ListInstanceAssociations",
+      "user": "i-076b3670a1522a893",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:55:16-05:00",
+      "event": "ListInstanceAssociations",
+      "user": "i-02b80bca325a42d53",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:55:03-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-01d80466fe4a0a229",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:55:01-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-02b80bca325a42d53",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:55:01-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-076b3670a1522a893",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:54:59-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-01d80466fe4a0a229",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:54:47-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-076b3670a1522a893",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:54:11-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:54:11-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:54:06-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-0191df95a252511af",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:53:35-05:00",
+      "event": "ListInstanceAssociations",
+      "user": "i-09397bd263731ccf7",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:53:29-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-09397bd263731ccf7",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:52:45-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-02b80bca325a42d53",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:52:11-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:52:11-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:51:38-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-09397bd263731ccf7",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:50:10-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:50:10-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:50:08-05:00",
+      "event": "AssumeRole",
+      "user": null,
+      "source": "sts.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:50:08-05:00",
+      "event": "AssumeRole",
+      "user": null,
+      "source": "sts.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:49:59-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-01d80466fe4a0a229",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:49:59-05:00",
+      "event": "DescribeTransitGatewayAttachments",
+      "user": "Cloud",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:49:58-05:00",
+      "event": "DescribeTransitGateways",
+      "user": "Cloud",
+      "source": "ec2.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:49:47-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-076b3670a1522a893",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:49:06-05:00",
+      "event": "UpdateInstanceInformation",
+      "user": "i-0191df95a252511af",
+      "source": "ssm.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:48:10-05:00",
+      "event": "DescribeTargetHealth",
+      "user": "AutoScaling",
+      "source": "elasticloadbalancing.amazonaws.com"
+    },
+    {
+      "region": "sa-east-1",
+      "time": "2026-03-24 19:48:10-05:00",
+      "event": "DescribeInstanceStatus",
+      "user": "AutoScaling",
+      "source": "ec2.amazonaws.com"
+    }
+  ]
+}

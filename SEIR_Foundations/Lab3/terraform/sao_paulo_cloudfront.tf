@@ -13,11 +13,11 @@ resource "aws_cloudfront_distribution" "liberdade_cf01" {
   is_ipv6_enabled     = true
   comment             = "Liberdade CloudFront distribution"
 
-  logging_config {
-    include_cookies = false
-    bucket          = "chrisbarm-cloudfront-logs-${data.aws_caller_identity.saopaulo_current.account_id}.s3.amazonaws.com"
-    prefix          = "liberdade-cf/"
-  }
+  # logging_config {
+  #   include_cookies = false
+  #   bucket          = "liberdade-cloudfront-logs-${data.aws_caller_identity.liberdade_self01.account_id}.s3.amazonaws.com"
+  #   prefix          = "liberdade-cf/"
+  # }
 
   web_acl_id = aws_wafv2_web_acl.liberdade_waf_acl.arn
 

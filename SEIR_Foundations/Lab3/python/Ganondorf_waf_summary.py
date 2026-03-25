@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 # How you would talk about this script at an interview.
 # "I standardized WAF triage by querying logs and producing an audit-friendly summary."
 
-logs = boto3.client("logs")
+logs = boto3.client("logs", region_name="us-east-1")
 
 def run(group, query, minutes):
     end = int(datetime.now(timezone.utc).timestamp())

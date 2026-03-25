@@ -87,3 +87,21 @@ resource "aws_wafv2_web_acl" "liberdade_waf_acl" {
     Purpose    = "Security Evidence"
   }
 }
+
+resource "aws_cloudwatch_log_group" "liberdade_waf_logs" {
+  provider          = aws.us_east_virginia
+  name              = "aws-waf-logs-liberdade"
+  retention_in_days = 7
+
+  tags = {
+    Name = "aws-waf-logs-liberdade"
+  }
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "liberdade_waf_logging" {
+  provider                = aws.us_east_virginia
+  resource_arn            = aws_wafv2_web_acl.liberdade_waf_acl.arn
+  log_destination_configs = [aws_cloudwatch_log_group.liberdade_waf_logs.arn]
+
+  depends_on = [aws_cloudwatch_log_group.liberdade_waf_logs]
+}

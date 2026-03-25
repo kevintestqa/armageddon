@@ -1,4 +1,4 @@
-shinjuku_peer_attachment_id = "tgw-attach-0b4d9bb7491715cfb"
+shinjuku_peer_attachment_id = null
 db_name = "elysium"
 db_username = "admin"
 db_password = "Quasar123!"
