@@ -6,7 +6,7 @@
 resource "aws_lb" "liberdade_alb01" {
   name               = "${var.liberdade}-alb01"
   load_balancer_type = "application"
-  internal           = false
+  internal           = true
 
   security_groups = [aws_security_group.liberdade_alb_sg01.id]
   subnets         = aws_subnet.liberdade_public_subnets[*].id
