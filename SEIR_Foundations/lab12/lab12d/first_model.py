@@ -17,6 +17,7 @@ import json
 import boto3
 
 s3_client = boto3.client("s3")  # Initialize the S3 client
+bucket_name = "sample-willocks-storage"  # Replace with your actual bucket name
 
 # evidence = ThreatEvidence(
 #     identity=EvidenceIdentity(
@@ -146,8 +147,26 @@ def upload_evidence_to_s3(s3_client, bucket_name, object_key, evidence_json):
 
 upload = upload_evidence_to_s3(
     s3_client = s3_client,
-    bucket_name = "sample-willocks-storage", #Replace with actual bucket
+    bucket_name = bucket_name, #Replace with actual bucket
     object_key = s3_key,
     evidence_json = evidence_json)
 
 print("Uploaded to S3 with key:", upload)
+
+def download_evidence_from_s3(s3_client, bucket_name, object_key):
+    s3_object = s3_client.get_object(
+        Bucket = bucket_name,
+        Key = object_key
+    )
+    s3_object_body = s3_object['Body'].read().decode('utf-8')
+    restored_evidence = deserialize_evidence(s3_object_body)
+    return restored_evidence
+
+downloaded_evidence = download_evidence_from_s3(
+    s3_client = s3_client,
+    bucket_name = bucket_name, #Replace with actual bucket
+    object_key = s3_key)
+
+print( "Cloud round trip:",
+    downloaded_evidence == evidence
+    )
