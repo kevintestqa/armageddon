@@ -16,34 +16,15 @@ from models.evidence import (
 import json
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
+import os
 
 s3_client = boto3.client("s3")  # Initialize the S3 client
-bucket_name = "sample-willocks-storage"  # Replace with your actual bucket name
+BUCKET_NAME = os.getenv("EVIDENCE_BUCKET")  # Use environment variable if available
 
-# evidence = ThreatEvidence(
-#     identity=EvidenceIdentity(
-#         evidence_id="ev-001",
-#         provider_name="AWS",
-#         provider_type=ProviderType.CLOUD_NATIVE,
-#         provider_platform=PlatformType.GITHUB,
-#     ),
-#     indicator=EvidenceIndicator(
-#         indicator_type=IndicatorType.TOKEN_ID,
-#         indicator_value="ghp_example",
-#         indicator_source=IndicatorSource.EXTERNAL_API,
-#         condition=ThreatCondition.TOKEN_EXPOSURE,
-#     ),
-#     context=EvidenceContext(
-#         severity=ThreatSeverity.HIGH,
-#     ),
-# )
-
-# print(evidence.describe())
-
-# restored = ThreatEvidence.from_dict(evidence.to_dict())
-
-# print("Round trip:", restored == evidence)
-
+if not BUCKET_NAME:
+    raise RuntimeError(
+        "EVIDENCE_BUCKET environment variable is required."
+    )
 
 def build_evidence():
     """Build and return one example ThreatEvidence object."""
@@ -52,8 +33,8 @@ def build_evidence():
         identity=EvidenceIdentity(
             evidence_id="ev-001",
             provider_name="GitHub",
-            provider_type=ProviderType.CLOUD_NATIVE,
-            provider_platform=PlatformType.GITHUB,
+            provider_type=ProviderType.COMMERCIAL,
+            provider_platform=PlatformType.MULTI_CLOUD,
         ),
         indicator=EvidenceIndicator(
             indicator_type=IndicatorType.TOKEN_ID,
@@ -62,7 +43,7 @@ def build_evidence():
             condition=ThreatCondition.TOKEN_EXPOSURE,
         ),
         context=EvidenceContext(
-            severity=ThreatSeverity.CRITICAL,
+            severity=ThreatSeverity.HIGH,
         ),
     )
 
@@ -128,11 +109,6 @@ def deserialize_evidence(evidence_json):
 
 restored_from_json = deserialize_evidence(evidence_json)
 
-print(
-    "JSON round trip:",
-    restored_from_json == evidence,
-)
-
 def upload_evidence_to_s3(s3_client, bucket_name, object_key, evidence_json):
     """Upload the JSON representation of ThreatEvidence to S3."""
 
@@ -148,7 +124,7 @@ def upload_evidence_to_s3(s3_client, bucket_name, object_key, evidence_json):
 
 upload = upload_evidence_to_s3(
     s3_client = s3_client,
-    bucket_name = bucket_name, #Replace with actual bucket
+    bucket_name = BUCKET_NAME, #Replace with actual bucket
     object_key = s3_key,
     evidence_json = evidence_json)
 
@@ -213,7 +189,7 @@ def safe_download_evidence_from_s3(
 # Attempt the download through the error-handling wrapper.
 downloaded_evidence = safe_download_evidence_from_s3(
     s3_client=s3_client,
-    bucket_name=bucket_name,
+    bucket_name=BUCKET_NAME,
     object_key=s3_key,
 )
 
@@ -277,7 +253,7 @@ def safe_upload_evidence_to_s3(
 # Upload the evidence through the error-handling wrapper.
 uploaded_key = safe_upload_evidence_to_s3(
     s3_client=s3_client,
-    bucket_name=bucket_name,
+    bucket_name=BUCKET_NAME,
     object_key=s3_key,
     evidence_json=evidence_json,
 )
@@ -286,7 +262,7 @@ uploaded_key = safe_upload_evidence_to_s3(
 if uploaded_key is not None:
     downloaded_evidence = safe_download_evidence_from_s3(
         s3_client=s3_client,
-        bucket_name=bucket_name,
+        bucket_name=BUCKET_NAME,
         object_key=uploaded_key,
     )
 
