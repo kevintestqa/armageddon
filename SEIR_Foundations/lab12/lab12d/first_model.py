@@ -18,14 +18,6 @@ import boto3
 from botocore.exceptions import BotoCoreError, ClientError
 import os
 
-s3_client = boto3.client("s3")  # Initialize the S3 client
-BUCKET_NAME = os.getenv("EVIDENCE_BUCKET")  # Use environment variable if available
-
-if not BUCKET_NAME:
-    raise RuntimeError(
-        "EVIDENCE_BUCKET environment variable is required."
-    )
-
 def build_evidence():
     """Build and return one example ThreatEvidence object."""
 
@@ -121,15 +113,6 @@ def upload_evidence_to_s3(s3_client, bucket_name, object_key, evidence_json):
     
     return object_key
 
-
-upload = upload_evidence_to_s3(
-    s3_client = s3_client,
-    bucket_name = BUCKET_NAME, #Replace with actual bucket
-    object_key = s3_key,
-    evidence_json = evidence_json)
-
-print("Uploaded to S3 with key:", upload)
-
 def download_evidence_from_s3(s3_client, bucket_name, object_key):
     s3_object = s3_client.get_object(
         Bucket = bucket_name,
@@ -184,21 +167,6 @@ def safe_download_evidence_from_s3(
 
         # None tells the caller that no ThreatEvidence object was returned.
         return None
-
-
-# Attempt the download through the error-handling wrapper.
-downloaded_evidence = safe_download_evidence_from_s3(
-    s3_client=s3_client,
-    bucket_name=BUCKET_NAME,
-    object_key=s3_key,
-)
-
-# Only compare objects when the download was successful.
-if downloaded_evidence is not None:
-    print(
-        "Cloud round trip:",
-        downloaded_evidence == evidence,
-    )
     
 
 def safe_upload_evidence_to_s3(
@@ -212,6 +180,16 @@ def safe_upload_evidence_to_s3(
     # Reject an empty key before sending a request to AWS.
     if not object_key or not object_key.strip():
         print("S3 upload failed: object key cannot be empty.")
+        return None
+
+    # Reject an empty JSON string before sending a request to AWS.
+    if not evidence_json or not evidence_json.strip():
+        print("S3 upload failed: evidence JSON cannot be empty.")
+        return None
+    
+    # Reject an empty bucket name before contacting AWS.
+    if not bucket_name or not bucket_name.strip():
+        print("S3 upload failed: bucket name cannot be empty.")
         return None
 
     try:
@@ -248,27 +226,41 @@ def safe_upload_evidence_to_s3(
 
         # None tells the caller that no ThreatEvidence object was returned.
         return None
+        
+def main():
+    """Run the live S3 evidence demonstration."""
 
+    bucket_name = os.getenv("EVIDENCE_BUCKET")
 
-# Upload the evidence through the error-handling wrapper.
-uploaded_key = safe_upload_evidence_to_s3(
-    s3_client=s3_client,
-    bucket_name=BUCKET_NAME,
-    object_key=s3_key,
-    evidence_json=evidence_json,
-)
+    if not bucket_name:
+        raise RuntimeError(
+            "EVIDENCE_BUCKET environment variable is required."
+        )
 
-# Download only when the upload succeeded.
-if uploaded_key is not None:
-    downloaded_evidence = safe_download_evidence_from_s3(
+    s3_client = boto3.client("s3")
+    evidence = build_evidence()
+    evidence_json = serialize_evidence(evidence)
+    s3_key = build_s3_key(evidence)
+
+    uploaded_key = safe_upload_evidence_to_s3(
         s3_client=s3_client,
-        bucket_name=BUCKET_NAME,
-        object_key=uploaded_key,
+        bucket_name=bucket_name,
+        object_key=s3_key,
+        evidence_json=evidence_json,
     )
 
-    # Compare only when the download also succeeded.
-    if downloaded_evidence is not None:
-        print(
-            "Cloud round trip:",
-            downloaded_evidence == evidence,
+    if uploaded_key is not None:
+        downloaded_evidence = safe_download_evidence_from_s3(
+            s3_client=s3_client,
+            bucket_name=bucket_name,
+            object_key=uploaded_key,
         )
+
+        if downloaded_evidence is not None:
+            print(
+                "Cloud round trip:",
+                downloaded_evidence == evidence,
+            )
+
+if __name__ == "__main__":
+    main()
