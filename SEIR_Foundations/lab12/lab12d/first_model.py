@@ -23,19 +23,19 @@ def build_evidence():
 
     evidence = ThreatEvidence(
         identity=EvidenceIdentity(
-            evidence_id="ev-001",
-            provider_name="GitHub",
-            provider_type=ProviderType.COMMERCIAL,
-            provider_platform=PlatformType.MULTI_CLOUD,
+            evidence_id="ev-011",
+            provider_name="Pawserenity.co",
+            provider_type=ProviderType.COMMUNITY,
+            provider_platform=PlatformType.AWS,
         ),
         indicator=EvidenceIndicator(
-            indicator_type=IndicatorType.TOKEN_ID,
+            indicator_type=IndicatorType.SHA256,
             indicator_value="ghp_example",
-            indicator_source=IndicatorSource.EXTERNAL_API,
-            condition=ThreatCondition.TOKEN_EXPOSURE,
+            indicator_source=IndicatorSource.APPLICATION_LOG,
+            condition=ThreatCondition.UNAUTHENTICATED_ENDPOINT,
         ),
         context=EvidenceContext(
-            severity=ThreatSeverity.HIGH,
+            severity=ThreatSeverity.CRITICAL,
         ),
     )
 
@@ -226,9 +226,160 @@ def safe_upload_evidence_to_s3(
 
         # None tells the caller that no ThreatEvidence object was returned.
         return None
-        
+
+
+def publish_evidence_metrics(cloudwatch_client, evidence):
+    severity = evidence.context.severity.value
+    provider = evidence.identity.provider_name
+    indicator_type = evidence.indicator.indicator_type.value
+
+    metric_data = [
+        {
+            "MetricName": "EvidenceTotal",
+            "Value": 1,
+            "Unit": "Count",
+        },
+        {
+            "MetricName": "EvidenceBySeverity",
+            "Dimensions": [
+                {
+                    "Name": "Severity",
+                    "Value": severity,
+                }
+            ],
+            "Value": 1,
+            "Unit": "Count",
+        },
+        {
+            "MetricName": "EvidenceByProvider",
+            "Dimensions": [
+                {
+                    "Name": "Provider",
+                    "Value": provider,
+                }
+            ],
+            "Value": 1,
+            "Unit": "Count",
+        },
+        {
+            "MetricName": "EvidenceByIndicatorType",
+            "Dimensions": [
+                {
+                    "Name": "IndicatorType",
+                    "Value": indicator_type,
+                }
+            ],
+            "Value": 1,
+            "Unit": "Count",
+        },
+    ]
+
+    cloudwatch_client.put_metric_data(
+        Namespace="Armageddon/ThreatEvidence",
+        MetricData=metric_data,
+    )
+    
+def create_cloudwatch_dashboard(cloudwatch_client):
+    """Create the threat-monitoring CloudWatch dashboard."""
+
+    dashboard_body = {
+        "start": "-PT3H",
+        "periodOverride": "inherit",
+        "widgets": [
+            {
+                "type": "metric",
+                "x": 0,
+                "y": 0,
+                "width": 6,
+                "height": 6,
+                "properties": {
+                    "title": "Total Evidence Processed",
+                    "view": "singleValue",
+                    "region": "us-west-1",
+                    "stat": "Sum",
+                    "period": 300,
+                    "metrics": [
+                        [
+                            "Armageddon/ThreatEvidence",
+                            "EvidenceTotal",
+                        ]
+                    ],
+                },
+            },
+            {
+                "type": "metric",
+                "x": 6,
+                "y": 0,
+                "width": 9,
+                "height": 6,
+                "properties": {
+                    "title": "Evidence by Severity",
+                    "view": "bar",
+                    "region": "us-west-1",
+                    "stat": "Sum",
+                    "period": 300,
+                    "metrics": [
+                        [
+                            {
+                                "expression": (
+                                    "SEARCH("
+                                    "'{Armageddon/ThreatEvidence,Severity} "
+                                    "MetricName=\"EvidenceBySeverity\"', "
+                                    "'Sum', 300)"
+                                ),
+                                "id": "severity_search",
+                            }
+                        ]
+                    ],
+                },
+            },
+            {
+                "type": "metric",
+                "x": 15,
+                "y": 0,
+                "width": 9,
+                "height": 6,
+                "properties": {
+                    "title": "Evidence by Indicator Type",
+                    "view": "pie",
+                    "region": "us-west-1",
+                    "stat": "Sum",
+                    "period": 300,
+                    "metrics": [
+                        [
+                            {
+                                "expression": (
+                                    "SEARCH("
+                                    "'{Armageddon/ThreatEvidence,IndicatorType} "
+                                    "MetricName=\"EvidenceByIndicatorType\"', "
+                                    "'Sum', 300)"
+                                ),
+                                "id": "indicator_search",
+                            }
+                        ]
+                    ],
+                },
+            },
+        ],
+    }
+
+    response = cloudwatch_client.put_dashboard(
+        DashboardName="Armageddon-Threat-Monitoring-Automated",
+        DashboardBody=json.dumps(dashboard_body),
+    )
+
+    print("Created CloudWatch dashboard.")
+    return response
+
 def main():
     """Run the live S3 evidence demonstration."""
+
+    cloudwatch_client = boto3.client(
+        "cloudwatch",
+        region_name="us-west-1",
+    )
+
+    create_cloudwatch_dashboard(cloudwatch_client)
 
     bucket_name = os.getenv("EVIDENCE_BUCKET")
 
@@ -250,6 +401,11 @@ def main():
     )
 
     if uploaded_key is not None:
+        publish_evidence_metrics(
+            cloudwatch_client=cloudwatch_client,
+            evidence=evidence,
+        )
+
         downloaded_evidence = safe_download_evidence_from_s3(
             s3_client=s3_client,
             bucket_name=bucket_name,
