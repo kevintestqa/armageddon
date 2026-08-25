@@ -1,0 +1,45 @@
+name: Lab 12D Python Tests
+
+on:
+    push:
+        paths:
+            - "SEIR_Foundations/lab12/lab12d/**"
+            - ".github/workflows/lab12d-tests.yml"
+
+    pull_request:
+        paths:
+            - "SEIR_Foundations/lab12/lab12d/**"
+            - ".github/workflows/lab12d-tests.yml"
+
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: SEIR_Foundations/lab12/lab12d
+
+        steps:
+            - name: Check out repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.12"
+                  cache: pip
+                  cache-dependency-path: SEIR_Foundations/lab12/lab12d/requirements.txt
+
+            - name: Install dependencies
+              run: |
+                  python -m pip install --upgrade pip
+                  python -m pip install -r requirements.txt
+                  python -m pip install pytest
+
+            - name: Run tests
+              run: python -m pytest tests -v

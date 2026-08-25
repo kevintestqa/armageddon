@@ -29,13 +29,13 @@ def build_evidence():
             provider_platform=PlatformType.AWS,
         ),
         indicator=EvidenceIndicator(
-            indicator_type=IndicatorType.SHA256,
+            indicator_type=IndicatorType.CONTAINER,
             indicator_value="ghp_example",
-            indicator_source=IndicatorSource.APPLICATION_LOG,
+            indicator_source=IndicatorSource.CLOUDWATCH_LOGS,
             condition=ThreatCondition.UNAUTHENTICATED_ENDPOINT,
         ),
         context=EvidenceContext(
-            severity=ThreatSeverity.CRITICAL,
+            severity=ThreatSeverity.MEDIUM,
         ),
     )
 
